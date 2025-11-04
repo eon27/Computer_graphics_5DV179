@@ -1,0 +1,168 @@
+#include <algorithm>
+#include <math.h>
+
+class matrix {
+    public:
+        float mat[4][4];
+
+        matrix() {
+            float temp_mat[4][4] = {
+                {1.0,0,0,0},
+                {0,1,0,0},
+                {0,0,1,0},
+                {0,0,0,1}
+            };
+            for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < 4; j++) {
+                    mat[i][j] = temp_mat[i][j];
+                }
+            }
+        }
+
+        matrix(float temp_mat[4][4]) {
+            for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < 4; j++) {
+                    mat[i][j] = temp_mat[i][j];
+                }
+            }
+        }
+
+        matrix& operator*(const matrix& rhs) {
+            float result_matrix[4][4] = {
+                {0,0,0,0},
+                {0,0,0,0},
+                {0,0,0,0},
+                {0,0,0,0}
+            };
+            for (int r = 0; r < 4; r++) {
+                for (int c = 0; c < 4; c++) {
+                    for (int i = 0; i < 4; i++) {
+                        result_matrix[r][c] += this->mat[r][i] * rhs.mat[i][c]; 
+                    }
+                }
+            }
+            matrix result(result_matrix);
+            return result;
+        }
+
+        void translate(float dx, float dy, float dz) {
+            float translation_array[4][4] = {{1,0,0,0},{0,1,0,0},{0,0,1,0},{dx,dy,dz,1}};
+            matrix translation_matrix(translation_array);
+            
+            *this = (*this) * translation_matrix;
+        }
+
+        void scale(float sx, float sy, float sz) {
+            float scale_array[4][4] = {{sx,0,0,0},{0,sy,0,0},{0,0,sz,0},{0,0,0,1}};
+            matrix scale_matrix(scale_array);
+            
+            *this = (*this) * scale_matrix;
+        }
+        
+        void rotatex(float a) {
+            float rotation_array[4][4] = {
+                {1,0,0,0},
+                {0,cos(a),-sin(a),0},
+                {0,sin(a),cos(a),0},
+                {0,0,0,1}};
+            matrix rotation_matrix(rotation_array);
+            
+            *this = (*this) * rotation_matrix;
+        }
+        void rotatey(float a) {
+            float rotation_array[4][4] = {
+                {cos(a),0,-sin(a),0},
+                {0,1,0,0},
+                {sin(a),0,cos(a),0},
+                {0,0,0,1}};
+            matrix rotation_matrix(rotation_array);
+
+            *this = (*this) * rotation_matrix;
+        }
+        void rotatez(float a) {
+            float rotation_array[4][4] = {
+                {cos(a),-sin(a),0,0},
+                {sin(a),cos(a),0,0},
+                {0,0,1,0},
+                {0,0,0,1}};
+            matrix rotation_matrix(rotation_array);
+
+            *this = (*this) * rotation_matrix;
+        }
+
+        vector4& operator*(const vector4 rhs) {
+            float vector[4] = {0,0,0,0};
+            for (int r = 0; r < 4; r++) {
+                for (int c = 0; c < 4; c++) {
+                    vector[r] += this->mat[r][c] * rhs.vec[r];
+                }
+            }
+            vector4 result(vector);
+            return result;
+        }
+
+};
+
+class vector3 {
+    public:
+        float vec[3];
+
+        vector3() {
+            for (int i = 0; i < 3; i++){
+                vec[i] = 0;
+            }
+        }
+
+        vector3(float x, float y, float z) {
+            vec[0] = x;
+            vec[1] = y;
+            vec[2] = z;
+        }
+
+        vector3& operator*(const vector3& rhs) {
+            float row1 = vec[1] * rhs.vec[2] - vec[2] * rhs.vec[1];
+            float row2 = vec[2] * rhs.vec[0] - vec[0] * rhs.vec[2];
+            float row3 = vec[0] * rhs.vec[1] - vec[1] * rhs.vec[0];
+            vector3 result({row1, row2, row3});
+            return result;
+        }
+};
+
+class vector4 {
+    public:
+        float vec[4];
+
+        vector4() {
+            for (int i = 0; i < 4; i++){
+                vec[i] = 0;
+            }
+        }
+
+        vector4(float x, float y, float z) {
+            vec[0] = x;
+            vec[1] = y;
+            vec[2] = z;
+            vec[3] = 1;
+        }
+
+        vector4(vector3 vector) {
+            vec[0] = vector.vec[0];
+            vec[1] = vector.vec[1];
+            vec[2] = vector.vec[2];
+            vec[3] = 1;
+        }
+
+        vector4(float x, float y, float z, float w) {
+            vec[0] = x;
+            vec[1] = y;
+            vec[2] = z;
+            vec[3] = w;
+        }
+
+        vector4(float vector[4]) {
+            vec[0] = vector[0];
+            vec[1] = vector[1];
+            vec[2] = vector[2];
+            vec[3] = vector[3];
+        }
+};
