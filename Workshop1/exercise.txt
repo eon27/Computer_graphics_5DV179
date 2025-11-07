@@ -1,0 +1,10 @@
+Ex1. (0,0) is in the middle of the screen, (-1,-1) is the lower left corner.
+
+Ex2. visible x for -1 <= x < 1   When it is not visible it is outside the viewing box, 
+no need for recompiling because the glsl files are compiled at runtime
+
+Ex3. -1 <= z < 1    -1 <= x,y <= 1
+outside of this cube is not shown but may be loaded because parts of the line may be inside the cube in which case both needs to be mathematically rendered.
+
+Ex4. The render is squished and maintains the same ratio to the window.
+
