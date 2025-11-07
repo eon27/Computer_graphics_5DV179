@@ -272,3 +272,111 @@ Major OpenGL objects:
 
 ### OpenGL primitive types
 Polygons, triangles, render primitives
+
+# Lecture 2
+Linear algebra stuff, check slides.
+
+## Projective geometry  
+## Homogenous coordinates
+for the line L => ax+by+c=0 we can write the line with a 3-vector as (a,b,c)
+
+and a point P is written with (x,y,1)
+
+Any point on a line fullfills the equation L^T^P = 0
+
+Scaling a line in a homogenous coordinate system doesnt change the line because multiplying both sides of a line equation is the same line. 
+
+If we do the same for a point we dont change its 2d coordinate but we can see it as we are moving the point along a line in 3d (see lecture 2 slide 58). Therefore we can represent a point (u,v,w) with (u/w,v/w)
+
+### Point at infinity
+A point with the homogenous coordinate (u,v,0), u and v become infinitly large so it becomes a direction that is defined by the ratio between u and v. 
+
+### Intersection
+
+To find the intersection of two points in the homogenous coordinate system we find the point P that fulfills:
+
+L^T^P = 0
+
+L2^T^P = 0
+
+This is done by taking the cross product between the lines. Because we get a vector pointing orthogonal to both lines which is a line that points out or inwards in the 3d space which looks like a point in 2d.
+
+### Intersection of parallell lines
+If we do the same for two parallell lines we get a point at infinity
+
+(0,1,-4) x (0,1,-1) we get the vector (3,0,0)
+
+## Frames
+lecture 2 slide 68
+### The canonical frame
+Consider the canonical frame 
+
+    (1,0,0)
+F = (0,1,0)
+    
+    (0,0,1)
+
+It is the identity matrix with the directions x,y and the point (0,0)
+
+### Geometric transformations
+Using homogenous coordinates all important transformations may be written as matrix-vector multiplications
+
+## Carteisian VS Homogenous
+summary found on page 73
+
+## Transformations
+An object is a set of points.
+
+In 2d the transformation matrix is 3x3
+
+In 3d the transformation matrix is 4x4
+
+### Translation in 2d
+Moving points in a uniform direction
+
+Vector v and Point p
+
+the transformaed point q is q = T(v)p
+
+We put the transformation vector v in the last column of a standard matrix and multiply it by the points then the points gets shifted by the vector.
+
+### Scaling and reflection
+Isotropic scaling: The same in all directions
+anisotropic: One size of scaling in each direction
+
+Isotropic we put the same value in ((a,0,0),(0,a,0),(0,0,1))
+
+anisotropic ((a,0,0),(0,b,0),(0,0,1))
+
+### Reflection
+Reflection we inverse x or y or both
+
+A reflection of both x and y in an odd number of coordinate axels, left hand coordinates becomes right handed but with even number of axels it is the same as a rotation in 180^o^
+
+The inverse reflection is the transpose of the reflection matrix. So we can flip back and forth by always tansposing the current reflection matrix.
+
+### Shearing in 2d
+Shearing is done by scaling x by a factor of y or y by a factor of x.
+Hxy or Hyx where 
+
+Hxy = ((1,a,0),(0,1,0),(0,0,1))
+
+Hyx = ((1,0,0),(a,1,0),(0,0,1))
+
+### Rotation in 2d
+R(a) rotates a point counter clockwise by an angle of a
+
+R(a) = ((cosa,-sina,0),(sina,cosa,0),(0,0,1))
+
+The inverse rotation is R^T^
+
+### Concatenation of transformations
+We want to do multiple transformations one after another, We can multiply all transformations one efter another to get a resulting matrix that does all the transformations at the same time.
+
+Remember: Matrix multiplication is not comutative, so the order of the transformations matter.
+
+Example: To rotate about a point that is not at the origin. We have the rotation matrix but it can only rotate about origin. So we must first move all points so the point of rotation is at the origin and then rotate and then move the points back.
+
+The inverse of multiple transformations is inverse transformations in the reverse order
+
+transformation ABC has the inverse C^-1 B^-1 A^-1
