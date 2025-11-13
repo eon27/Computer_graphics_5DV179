@@ -1,8 +1,8 @@
 #ifndef LINEARALGEBRA
 #define LINEARALGEBRA
 
-// 3D vector that has logic for vector multiplication, scalar multiplication and addition
-// the standard vector is (0,0,0).
+// 3D vector that has implemented vector multiplication, scalar multiplication, addition and subtraction.
+// 
 class Vector3 {
     public:
         float vec[3];
@@ -14,8 +14,12 @@ class Vector3 {
         Vector3(double vector[3]);
 
         static Vector3 cross(const Vector3& lhs, const Vector3& rhs);
+        
+        Vector3 cross(const Vector3& rhs);
 
         float operator*(const Vector3& rhs);
+
+        Vector3 operator*(const float rhs);
 
         Vector3 operator+(const Vector3& rhs);
         
@@ -24,7 +28,7 @@ class Vector3 {
     };
 
 /**
- * 4D vector that has logic for 
+ * 4D vector that has implemented vector addition and subtraction. Has a mutlitude of constructors for ease of use.
  */
 class Vector4 {
     public:
@@ -45,6 +49,12 @@ class Vector4 {
         Vector4 operator-(const Vector4& rhs);
 };
 
+/**
+ * Matrix implementation with support for 4x4 matrices
+ * Has matrix multiplication, addition and subtraction implemented with opperator overloading.
+ * Can translate, scale and rotate.
+ * Mutliplication works with Vector4 from the same library.
+ */
 class Matrix {
     public:
         float mat[16];
