@@ -380,3 +380,164 @@ Example: To rotate about a point that is not at the origin. We have the rotation
 The inverse of multiple transformations is inverse transformations in the reverse order
 
 transformation ABC has the inverse C^-1 B^-1 A^-1
+
+### Rotation in 3d
+We have many conventions for rotating but the important thing to remember is that the other axis are gonna change because of the rotation of the first. Rotating X changes the Y and Z axis so the order matters.
+
+## The Rigid-body transformation
+A rigid-body transformation is a transformation that preserves the shape of the object including its size and handedness. Any combination of translations and rotations will be a rigid-body transformation.
+
+it can be written as:
+
+| | |
+|---|---|
+|(A |b)|
+|(0 |1)|
+
+A rigid-body transformation can always be divided into a set of rotation and translation matrices.
+
+## Transformation hierarchy
+
+|||
+|---|---|
+|A|v|
+|w^T|1|
+
+|class|Matrix property|Invariants|
+|---|---|---|
+|Rigid-body|A inverse is A transpose, w = 0|Lenght, angle, area|
+|Similarity|Usinetry+uniform scaling|Angle, Parallellity, shape|
+|Affine|A invertible, w=0|Parallellity, incidence|
+|Projectivity|T invertible|Incidence|
+
+## Smooth transformations
+Typically we find a set of transformation matrices M0, M1, M2 ... 
+such that when they are applied in after one another the result is the final transformation we want
+
+but because rotation effects the rotations that comes after, we have a problem.
+
+### Quaternions
+We rotate in 4d and use the complex numbers i,j,k where i²=j²=k²=ijk=-1
+
+A quaternion **q** can offten be written as 
+
+---
+
+q = (cos(θ/2), v*sin(θ/2))
+
+**DONT KNOW SEARCH IT UP**
+
+## Transformation of normals
+given a vector **V** that is transformed as 
+
+w = TV
+
+how is its normal n transformed
+
+V^Tn = 0
+
+V^T T^T T^-Tn = 0
+
+(TV)^T (T^-T n) = 0
+
+(TV)^T = w^T
+
+(T^-T n) = m
+
+m = T^-T n
+
+---
+
+If T^-1 does not exist we may just adjoint matrix adj(T) instead.
+
+A adj(A) = det(A)I
+
+AA^-1 = I
+
+so if the inverse exists:
+
+adj(A) = det(A)A^-1
+
+if det(A) /= 1, multiplication by adj(A) changes the length of the normalvector
+
+---
+What if we dont need the invese?
+
+**T**^-1 = **T**^T then we can use **T** to transform the normal
+
+This is true for rotations, reflections, translations and uniform scaling.
+
+## Transformation of frames
+A homogenous point **p** is 
+
+**p** = **p**I
+
+The I is the identity matrix which contains the basis vectors for the canonical frame.
+
+### Example
+
+F = 
+||||
+|---|---|---|
+|1|0|0|
+|0|1|0|
+|0|0|1|
+
+P = (4,5,1)
+
+Now we rotate by 30^o
+
+FR(30) = 
+||||
+|---|---|---|
+|cos(30)|-sin(30)|0|
+|sin(30)|cos(30)|0|
+|0|0|1|
+
+For more on transformation of frames. Check Lecture 2 page 143-146
+
+## Rotation about an arbitrairy product
+To rotate an object around w, we turn w to a known axis, to the rotation and then rotate back. Because of what was proved in **Transformation of frames** we proved that a rotation matrix set up by 3 orthogonal vectors is a frame rotaion. So if we have 3 basis vectors where w is one of them we can rotate the system to get w to be one of x,y,z axis. We have **w** but we need to find two more orthogonal vectors
+
+We normalize **w** and compute the next orthogonal vector **u** by 
+
+u = (o, -**w**_z, **w**_y) if **w**_x is the smallest
+
+u = (-**w**_z, 0, **w**_x) if **w**_y is the smallest
+
+u = (-**w**_y, **w**_x, 0) if **w**_z is the smallest
+
+Then do the cross product to find the third.
+
+## Summary
+|Transformation|Equation|Comments|
+|---|---|---|
+|Point|q = Tp||
+|Normal|m = T^-T n| May use *T* in many cases|
+|Frame|G = FT^-1||
+
+## Coordinate systems in CG
+main coordinate systems: 
+1. Object
+2. World
+3. Camera
+4. Normalized device
+5. View port (projection plan)
+
+### Changes of coordinate system
+1. Placing an object in world coordinates:
+
+    * Model matrix **M** transforms object coordinates **p** to world coordinates **q**
+
+2. Place the camera in the world
+
+    * View matrix **V** transforms world coordinate **q** to camera (eye) coordinates **R** 
+
+3. Project the scene to normalized device coordinates
+
+    * Projection matrix **P** transforms camera coordinates **r** to NDC
+
+4. Orthogonal projection to the view port
+
+    * Handled by openGL
+
