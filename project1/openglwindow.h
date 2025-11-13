@@ -26,11 +26,12 @@ public:
     void start();
     virtual void initialize() = 0;
     virtual void display() = 0;
-    virtual void passAction(char action, char dir) = 0;
+    virtual void passAction(int action) = 0;
     void displayNow();
 
-    void checkKey(GLFWwindow* glfwWindow, objLoader& objData);
-    int load_new_object(objLoader& objData);
+    void openNewObject(GLFWwindow* glfwWindow, objLoader& objData);
+    int loadNewObject(objLoader& objData);
+    virtual void handleNewObject() = 0;
 
     objLoader objData;
 

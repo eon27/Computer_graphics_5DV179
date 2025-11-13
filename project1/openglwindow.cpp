@@ -213,6 +213,13 @@ void
 OpenGLWindow::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GLFW_TRUE);
+    else if (action == GLFW_PRESS) {
+        if (key == GLFW_KEY_O) {
+            openNewObject(glfwWindow, objData);
+        } else {
+            passAction(key);
+        }
+    }
 }
 
 // Start the GLFW loop
@@ -221,22 +228,7 @@ OpenGLWindow::start()
 {
     // Loop until the user closes the window
     while (!glfwWindowShouldClose(glfwWindow)) {
-        checkKey(glfwWindow, objData);
 
-
-        int stateUp = glfwGetKey(glfwWindow, GLFW_KEY_UP);
-        int stateDown = glfwGetKey(glfwWindow, GLFW_KEY_DOWN);
-        int stateLeft = glfwGetKey(glfwWindow, GLFW_KEY_LEFT);
-        int stateRight = glfwGetKey(glfwWindow, GLFW_KEY_RIGHT);
-        if (stateUp == GLFW_PRESS) {
-            passAction('r', 'u');
-        } else if (stateDown == GLFW_PRESS) {
-            passAction('r', 'd');
-        } else if (stateLeft == GLFW_PRESS) {
-            passAction('r', 'l');
-        } else if (stateRight == GLFW_PRESS) {
-            passAction('r', 'r');
-        }
         // Call display in geomentryRender to render the scene
         display();
         
@@ -258,18 +250,19 @@ void OpenGLWindow::displayNow()
     display();
 }
 
-void OpenGLWindow::checkKey(GLFWwindow* glfwWindow, objLoader& objData) {
-    int state = glfwGetKey(glfwWindow, GLFW_KEY_O);
-    if (state == GLFW_PRESS)
-    {
-        int status = load_new_object(objData); // Returns 0 on error.
+void OpenGLWindow::openNewObject(GLFWwindow* glfwWindow, objLoader& objData) {
+    //int state = glfwGetKey(glfwWindow, GLFW_KEY_O);
+    //if (state == GLFW_PRESS)
+    //{
+        int status = loadNewObject(objData); // Returns 0 on error.
         if (status == 0) {
             return;
         }
-    }
+        handleNewObject();
+    //}
 }
 
-int OpenGLWindow::load_new_object(objLoader& objData) {
+int OpenGLWindow::loadNewObject(objLoader& objData) {
     std::string fileName = "";
     char c;
 
