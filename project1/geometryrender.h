@@ -19,7 +19,8 @@ public:
 
     void initialize();
     virtual void display() override;
-    virtual void passAction(char action, char dir) override;
+    virtual void passAction(int action) override;
+    virtual void handleNewObject() override;
 
 private:
     GLuint program;
