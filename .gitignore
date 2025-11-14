@@ -27,6 +27,4 @@ out/
 .idea/
 *.swp
 
-# Ignore OS-specific files
-.DS_Store
-Thumbs.db
+project1/project1
