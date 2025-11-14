@@ -37,6 +37,8 @@ void GeometryRender::initialize()
     // Get locations of the attributes in the shader
     locVertices = glGetAttribLocation( program, "vPosition");
     locModel = glGetUniformLocation(program,"M");
+    locView = glGetUniformLocation(program,"V");
+    locProjection = glGetUniformLocation(program,"P");
 
     glBindVertexArray(0);
     glUseProgram(0);
@@ -64,6 +66,8 @@ void GeometryRender::loadGeometry(vector<Vector3> vertexList, vector<int> indexL
     glEnableVertexAttribArray(locVertices);
     
     glUniformMatrix4fv(locModel, 1, GL_TRUE, matModel.mat);
+    glUniformMatrix4fv(locView, 1, GL_TRUE, matView.mat);
+    glUniformMatrix4fv(locProjection, 1, GL_TRUE, matProjection.mat);
 
     // Load object data to the array buffer and index array
     size_t vSize = vertices.size()*sizeof(float)*3;

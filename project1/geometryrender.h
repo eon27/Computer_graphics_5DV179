@@ -30,6 +30,8 @@ private:
     GLuint vBuffer;
     GLuint iBuffer;
     GLuint locModel;
+    GLuint locView;
+    GLuint locProjection;
 
     // OpenGL attribute locations
     GLuint locVertices;
@@ -48,4 +50,12 @@ private:
                         0.0f, 1.0f, 0.0f, 0.0f,
                         0.0f, 0.0f, 1.0f, 0.0f,
                         0.0f, 0.0f, 0.0f, 1.0f};
+    Matrix matView = {1.0f, 0.0f, 0.0f, 0.0f,
+                        0.0f, 1.0f, 0.0f, 0.0f,
+                        0.0f, 0.0f, 1.0f, 0.0f,
+                        0.0f, 0.0f, 0.0f, 1.0f};
+    Matrix matProjection = {1.0f, 0.0f, 0.0f, 0.0f,
+                            0.0f, 1.0f, 0.0f, 0.0f,
+                            0.0f, 0.0f, 1.0f, 0.0f,
+                            0.0f, 0.0f, 0.0f, 1.0f};
 };
