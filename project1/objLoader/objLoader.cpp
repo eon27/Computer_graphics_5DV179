@@ -37,8 +37,6 @@ int objLoader::load(char *filename)
 		this->materialList = data.material_list;
 
 		this->camera = data.camera;
-
-		this->newData = true;
 	}
 
 	return no_error;
