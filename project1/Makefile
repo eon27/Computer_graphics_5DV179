@@ -7,13 +7,16 @@
 #
 SRC = ./
 TARGET = project1
-BUILD_DIR = ./
+BUILD_DIR = ./build
+LIBDIR = ./lib
 
 # All source files (they can be listed explicitly if needed)
 # Add $(wildcard $(SRC)/dir1/*.cpp) to add another subdirectory
 CPPS =  $(SRC)/main.cpp \
 	$(wildcard $(SRC)/*.cpp) \
-	$(wildcard $(SRC)/objLoader/*.cpp)
+	$(wildcard $(LIBDIR)/objLoader/*.cpp) \
+	$(wildcard $(LIBDIR)/ImGui/*.cpp) \
+	$(wildcard $(LIBDIR)/ImGuiFileDialog/*.cpp)
 # All .o files are put in the build directory
 OBJS = $(CPPS:%.cpp=$(BUILD_DIR)/%.o)
 # gcc/clang put the dependencies in the .d files
@@ -23,11 +26,13 @@ CXX = g++
 
 DBFLAGS = -O0 -g3 -ggdb3 -fno-inline
 #DBFLAGS = -O2
-WFLAGS  = -Wall -std=c++11
+WFLAGS  = -Wall -std=c++11 -Wformat -Wno-unknown-pragmas
 
 # Uncomment if you have local libraries or headers in subfolders lib and include
-#IFLAGS = #-Iinclude
-#LFLAGS = #-Llib 
+IFLAGS = -I$(LIBDIR)/ImGui -I$(LIBDIR)/ImGuiFileDialog
+LFLAGS = #-Llib
+
+IMGUIFLAGS = -DIMGUI_IMPL_OPENGL_LOADER_GLEW
 
 ifeq ($(OS), Windows_NT)
 # -DWINDOWS_BUILD needed to deal with Windows use of \ instead of / in path
@@ -38,14 +43,12 @@ OSLDFLAGS = -static -lglew32 -lglfw3 -lopengl32 -lgdi32 -luser32 -lkernel32
 else
 DEFS     = 
 GLFLAGS  = `pkg-config --cflags glfw3` 
-LGLFLAGS = `pkg-config --libs glew glfw3 gl`
+LGLFLAGS = `pkg-config --static --libs glew glfw3 gl`
 ELDFLAGS = -export-dynamic -lXext -lX11 
 endif
 
-CXXFLAGS = $(WFLAGS) $(DFLAGS) $(GLFLAGS)
-
-CXXFLAGS = $(DBFLAGS) $(DEFS) $(WFLAGS) $(IFLAGS) $(DFLAGS) $(GLFLAGS)
-LDFLAGS  = $(ELDFLAGS) $(LGLFLAGS) $(OSLDFLAGS)
+CXXFLAGS = $(DBFLAGS) $(DEFS) $(WFLAGS) $(IFLAGS) $(DFLAGS) $(GLFLAGS) $(IMGUIFLAGS)
+LDFLAGS  = $(ELDFLAGS) $(LGLFLAGS) $(OSLDFLAGS) $(LFLAGS)
 
 
 all: $(BUILD_DIR)/$(TARGET)

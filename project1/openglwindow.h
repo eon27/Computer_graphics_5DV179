@@ -10,7 +10,7 @@
 #include <GLFW/glfw3.h>
 
 #include "3dstudio.h"
-#include "objLoader/objLoader.h"
+#include "lib/objLoader/objLoader.h"
 
 class OpenGLWindow
 {

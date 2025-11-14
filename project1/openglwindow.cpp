@@ -6,7 +6,7 @@
  */
 
 #include "openglwindow.h"
-#include "objLoader/objLoader.h"
+#include "lib/objLoader/objLoader.h"
 
 using namespace std;
 
