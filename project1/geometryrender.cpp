@@ -116,11 +116,6 @@ vector<Vector3> GeometryRender::centerAndScaleObject(vector<Vector3> vertexList)
 	
 	float longestLength = max<float>(lengthX, max<float>(lengthY, lengthZ));
 	float scale = 1/longestLength;
-	
-    for (size_t i = 0; i < vertexList.size(); i++)
-    {
-        printf("x:%f y:%f z:%f\n", vertexList[i].vec[0], vertexList[i].vec[1], vertexList[i].vec[2]);
-    }
     
 	matModel.scale(scale, scale, scale);
     //matModel.translate(-middleX * scale, -middleY * scale, -middleZ * scale);
@@ -130,23 +125,6 @@ vector<Vector3> GeometryRender::centerAndScaleObject(vector<Vector3> vertexList)
 		vertexList[i].vec[2] -= middleZ;
 	}
 
-    printf("AFTER\n");
-    for (size_t i = 0; i < vertexList.size(); i++)
-    {
-        printf("x:%f y:%f z:%f\n", vertexList[i].vec[0], vertexList[i].vec[1], vertexList[i].vec[2]);
-    }
-
-	printf("LOWEST x:%f y:%f z:%f\n", lowestX, lowestY, lowestZ);
-	printf("HIGHEST: x:%f y:%f z:%f\n", highestX, highestY, highestZ);
-	printf("MIDDLE: x:%f y:%f z:%f\n", middleX, middleY, middleZ);
-	printf("TRANSLATING: x:%f y:%f z:%f\n", -middleX * scale, -middleY * scale, -middleZ * scale);
-	printf("SCALING: %f\n", scale);
-
-	for (long unsigned int i = 0; i < vertexList.size(); i++) {
-		printf("%f, %f, %f\n", vertexList[i].vec[0], vertexList[i].vec[1], vertexList[i].vec[2]);
-	}
-	printf("MATRIX\n");
-	matModel.printMatrix();
     return vertexList;
 }
 
@@ -226,7 +204,9 @@ void GeometryRender::handleNewObject() {
         vertexList.push_back(Vector3(objData.vertexList[i][0].e));
     }
     for (int i = 0; i < objData.faceCount; i++) {
-        for (long unsigned int j = 0; j < 3; j++) {
+        for (int j = 2; j < objData.faceList[i]->vertex_count; j++) {
+            indexList.push_back(objData.faceList[i]->vertex_index[0]);
+            indexList.push_back(objData.faceList[i]->vertex_index[j-1]);
             indexList.push_back(objData.faceList[i]->vertex_index[j]);
         }
     }
