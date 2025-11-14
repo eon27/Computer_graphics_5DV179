@@ -40,7 +40,7 @@ private:
 
     void debugShader(void) const;
 
-    void centerAndScaleObject();
+    std::vector<Vector3> centerAndScaleObject(std::vector<Vector3> vertexList);
     void loadGeometry(std::vector<Vector3> vertexList, std::vector<int> indexList);
     void loadObjectGeometry();
 

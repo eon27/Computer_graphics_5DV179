@@ -40,53 +40,16 @@ void GeometryRender::initialize()
 
     glBindVertexArray(0);
     glUseProgram(0);
-
-    vector<Vector3> vertex;
-    vector<int> index;
-    // Define vertices in array
-    vertex.push_back(Vector3( 0.0f,  0.0f, 0.0f));
-    vertex.push_back(Vector3( 0.5f,  0.0f, 0.0f));
-    vertex.push_back(Vector3( 0.5f,  0.5f, 0.0f));
-	vertex.push_back(Vector3( 0.0f,  0.5f, 0.0f));
-	vertex.push_back(Vector3(0.25f, 0.25f, 0.8f));
-
-    index.push_back(2);
-    index.push_back(1);
-    index.push_back(4);
-
-    index.push_back(2);
-    index.push_back(4);
-    index.push_back(3);
-	
-	index.push_back(1);
-	index.push_back(2);
-	index.push_back(5);
-	
-	index.push_back(1);
-	index.push_back(5);
-	index.push_back(4);
-
-	index.push_back(4);
-	index.push_back(5);
-	index.push_back(3);
-	
-	index.push_back(2);
-	index.push_back(3);
-	index.push_back(5);
-
-    loadGeometry(vertex, index);
-
 }
 
 void GeometryRender::loadGeometry(vector<Vector3> vertexList, vector<int> indexList)
 {
-    printf("MAKING NEW GEOMEtRY\n");
-
     vertices.clear();
     indices.clear();
-
-    for (long unsigned int i = 0; i < vertexList.size(); i++) {
-        vertices.push_back(vertexList[i]);
+    vector<Vector3> updatedVertices = centerAndScaleObject(vertexList);
+    
+    for (long unsigned int i = 0; i < updatedVertices.size(); i++) {
+        vertices.push_back(updatedVertices[i]);
     }
 
     for (long unsigned int i = 0; i < indexList.size(); i++) {
@@ -99,12 +62,11 @@ void GeometryRender::loadGeometry(vector<Vector3> vertexList, vector<int> indexL
     // Set the pointers of locVertices to the right places
     glVertexAttribPointer(locVertices, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
     glEnableVertexAttribArray(locVertices);
-
-    centerAndScaleObject();
+    
     glUniformMatrix4fv(locModel, 1, GL_TRUE, matModel.mat);
 
     // Load object data to the array buffer and index array
-    size_t vSize = vertices.size()*sizeof(Vector3);
+    size_t vSize = vertices.size()*sizeof(float)*3;
     size_t iSize = indices.size()*sizeof(unsigned int);
     glBufferData( GL_ARRAY_BUFFER, vSize, vertices.data()->vec, GL_STATIC_DRAW );
     glBufferData( GL_ELEMENT_ARRAY_BUFFER, iSize, indices.data(), GL_STATIC_DRAW );
@@ -113,28 +75,28 @@ void GeometryRender::loadGeometry(vector<Vector3> vertexList, vector<int> indexL
     glUseProgram(0);
 }
 
-void GeometryRender::centerAndScaleObject() {
-	if (vertices.empty()) return;
+vector<Vector3> GeometryRender::centerAndScaleObject(vector<Vector3> vertexList) {
+	if (vertexList.empty()) return vertexList;
 	// Reset the matrix	
 	matModel = Matrix();
 
-	float lowestX = vertices[0].vec[0];
-	float lowestY = vertices[0].vec[1];
-	float lowestZ = vertices[0].vec[2];
+	float lowestX = vertexList[0].vec[0];
+	float lowestY = vertexList[0].vec[1];
+	float lowestZ = vertexList[0].vec[2];
 
-	float highestX = vertices[0].vec[0];
-	float highestY = vertices[0].vec[1];
-	float highestZ = vertices[0].vec[2];
+	float highestX = vertexList[0].vec[0];
+	float highestY = vertexList[0].vec[1];
+	float highestZ = vertexList[0].vec[2];
 
 	// Find the lowest and highest x,y,z values.
-	for (long unsigned int i = 0; i < vertices.size(); i++) {
-		lowestX = min<float>(lowestX, vertices[i].vec[0]);
-		lowestY = min<float>(lowestY, vertices[i].vec[1]);
-		lowestZ = min<float>(lowestZ, vertices[i].vec[2]);
+	for (long unsigned int i = 0; i < vertexList.size(); i++) {
+		lowestX = min<float>(lowestX, vertexList[i].vec[0]);
+		lowestY = min<float>(lowestY, vertexList[i].vec[1]);
+		lowestZ = min<float>(lowestZ, vertexList[i].vec[2]);
 		
-		highestX = max<float>(highestX, vertices[i].vec[0]);
-		highestY = max<float>(highestY, vertices[i].vec[1]);
-		highestZ = max<float>(highestZ, vertices[i].vec[2]);
+		highestX = max<float>(highestX, vertexList[i].vec[0]);
+		highestY = max<float>(highestY, vertexList[i].vec[1]);
+		highestZ = max<float>(highestZ, vertexList[i].vec[2]);
 	}
 
 	float middleX = (lowestX + highestX) / 2;
@@ -155,14 +117,24 @@ void GeometryRender::centerAndScaleObject() {
 	float longestLength = max<float>(lengthX, max<float>(lengthY, lengthZ));
 	float scale = 1/longestLength;
 	
-	//matModel.translate(-middleX, -middleY, -middleZ);
+    for (size_t i = 0; i < vertexList.size(); i++)
+    {
+        printf("x:%f y:%f z:%f\n", vertexList[i].vec[0], vertexList[i].vec[1], vertexList[i].vec[2]);
+    }
+    
 	matModel.scale(scale, scale, scale);
-    matModel.translate(-middleX * scale, -middleY * scale, -middleZ * scale);
-	// for (long unsigned int i = 0; i < vertices.size(); i++) {
-	// 	vertices[i].vec[0] -= middleX;
-	// 	vertices[i].vec[1] -= middleY;
-	// 	vertices[i].vec[2] -= middleZ;
-	// }
+    //matModel.translate(-middleX * scale, -middleY * scale, -middleZ * scale);
+	for (long unsigned int i = 0; i < vertexList.size(); i++) {
+		vertexList[i].vec[0] -= middleX;
+		vertexList[i].vec[1] -= middleY;
+		vertexList[i].vec[2] -= middleZ;
+	}
+
+    printf("AFTER\n");
+    for (size_t i = 0; i < vertexList.size(); i++)
+    {
+        printf("x:%f y:%f z:%f\n", vertexList[i].vec[0], vertexList[i].vec[1], vertexList[i].vec[2]);
+    }
 
 	printf("LOWEST x:%f y:%f z:%f\n", lowestX, lowestY, lowestZ);
 	printf("HIGHEST: x:%f y:%f z:%f\n", highestX, highestY, highestZ);
@@ -170,11 +142,12 @@ void GeometryRender::centerAndScaleObject() {
 	printf("TRANSLATING: x:%f y:%f z:%f\n", -middleX * scale, -middleY * scale, -middleZ * scale);
 	printf("SCALING: %f\n", scale);
 
-	for (long unsigned int i = 0; i < vertices.size(); i++) {
-		printf("%f, %f, %f\n", vertices[i].vec[0], vertices[i].vec[1], vertices[i].vec[2]);
+	for (long unsigned int i = 0; i < vertexList.size(); i++) {
+		printf("%f, %f, %f\n", vertexList[i].vec[0], vertexList[i].vec[1], vertexList[i].vec[2]);
 	}
 	printf("MATRIX\n");
 	matModel.printMatrix();
+    return vertexList;
 }
 
 // Check if any error has been reported from the shader
@@ -199,10 +172,8 @@ void GeometryRender::display()
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    printf("DRAWINg NEw FRAME\n");
-
     // Call OpenGL to draw the triangle
-    glDrawElements(GL_POINTS, static_cast<int>(indices.size()), GL_UNSIGNED_INT, BUFFER_OFFSET(0));
+    glDrawElements(GL_TRIANGLES, static_cast<int>(indices.size()), GL_UNSIGNED_INT, BUFFER_OFFSET(0));
 
     // Not to be called in release...
     debugShader();
@@ -217,31 +188,28 @@ void GeometryRender::passAction(int action) {
     switch (action)
     {
     case GLFW_KEY_UP:
-        printf("ROTATE up\n");
-        matModel.rotatex(-0.1745);
+        matModel.rotatex(-M_PI/18);
         break;
     case GLFW_KEY_DOWN:
-        printf("ROTATE down\n");
-        matModel.rotatex(0.1745);
+        matModel.rotatex(M_PI/18);
         break;
     case GLFW_KEY_LEFT:
-        printf("ROTATE left\n");
-        matModel.rotatey(-0.1745);
+        matModel.rotatey(M_PI/18);
         break;
     case GLFW_KEY_RIGHT:
-        printf("ROTATE right\n");
-        matModel.rotatey(0.1745);
+        matModel.rotatey(-M_PI/18);
         break;
     case GLFW_KEY_J:
-        /* code */
+        matModel.translate(-0.1, 0, 0);
         break;
     case GLFW_KEY_L:
-        /* code */
+        matModel.translate(0.1, 0, 0);
         break;
     case GLFW_KEY_I:
-        /* code */
+        matModel.translate(0, 0.1, 0);
         break;
     case GLFW_KEY_K:
+        matModel.translate(0, -0.1, 0);
         break;
     default:
         break;
