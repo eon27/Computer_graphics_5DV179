@@ -12,6 +12,11 @@
 #include "3dstudio.h"
 #include "lib/objLoader/objLoader.h"
 
+#include "lib/ImGui/imgui.h"
+#include "lib/ImGui/imgui_impl_glfw.h"
+#include "lib/ImGui/imgui_impl_opengl3.h"
+#include "lib/ImGuiFileDialog/ImGuiFileDialog.h"
+
 class OpenGLWindow
 {
 public:
@@ -46,6 +51,8 @@ protected:
     void reshape(const int width, const int height) const;
 
 private:
+    void DrawGui();
+
     GLFWwindow* glfwWindow;
     int windowWidth = 0;
     int windowHeight = 0;
