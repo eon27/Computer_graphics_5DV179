@@ -34,8 +34,7 @@ public:
     virtual void passAction(int action) = 0;
     void displayNow();
 
-    void openNewObject(GLFWwindow* glfwWindow, objLoader& objData);
-    int loadNewObject(objLoader& objData);
+    void openNewObject(std::string filename);
     virtual void handleNewObject() = 0;
 
     objLoader objData;

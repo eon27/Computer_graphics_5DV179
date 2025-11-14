@@ -46,16 +46,7 @@ private:
     void loadGeometry(std::vector<Vector3> vertexList, std::vector<int> indexList);
     void loadObjectGeometry();
 
-    Matrix matModel = {1.0f, 0.0f, 0.0f, 0.0f,
-                        0.0f, 1.0f, 0.0f, 0.0f,
-                        0.0f, 0.0f, 1.0f, 0.0f,
-                        0.0f, 0.0f, 0.0f, 1.0f};
-    Matrix matView = {1.0f, 0.0f, 0.0f, 0.0f,
-                        0.0f, 1.0f, 0.0f, 0.0f,
-                        0.0f, 0.0f, 1.0f, 0.0f,
-                        0.0f, 0.0f, 0.0f, 1.0f};
-    Matrix matProjection = {1.0f, 0.0f, 0.0f, 0.0f,
-                            0.0f, 1.0f, 0.0f, 0.0f,
-                            0.0f, 0.0f, 1.0f, 0.0f,
-                            0.0f, 0.0f, 0.0f, 1.0f};
+    Matrix matModel = Matrix();
+    Matrix matView = Matrix();
+    Matrix matProjection = Matrix();
 };

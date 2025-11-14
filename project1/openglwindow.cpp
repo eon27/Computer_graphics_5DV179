@@ -77,10 +77,7 @@ OpenGLWindow::OpenGLWindow(string title, int width, int height)
 }
 
 OpenGLWindow::~OpenGLWindow()
-{
-    // Just to make sure it is called.
-    objData.~objLoader();
-
+{   
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
@@ -239,11 +236,7 @@ OpenGLWindow::keyCallback(GLFWwindow* window, int key, int scancode, int action,
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GLFW_TRUE);
     else if (action == GLFW_PRESS) {
-        if (key == GLFW_KEY_O) {
-            openNewObject(glfwWindow, objData);
-        } else {
-            passAction(key);
-        }
+        passAction(key);
     }
 }
 
@@ -279,6 +272,7 @@ OpenGLWindow::DrawGui()
                 objFileName = fileDialog.GetCurrentFileName();
                 objFilePath = fileDialog.GetCurrentPath();
                 cout << "OBJ file: " << objFileName << endl << "Path: " << objFilePath << endl;
+                openNewObject(objFilePath + '/' + objFileName);
             }
             fileDialog.Close();
         }
@@ -345,36 +339,13 @@ void OpenGLWindow::displayNow()
     display();
 }
 
-void OpenGLWindow::openNewObject(GLFWwindow* glfwWindow, objLoader& objData) {
-    //int state = glfwGetKey(glfwWindow, GLFW_KEY_O);
-    //if (state == GLFW_PRESS)
-    //{
-        int status = loadNewObject(objData); // Returns 0 on error.
-        if (status == 0) {
-            return;
-        }
-        handleNewObject();
-    //}
-}
-
-int OpenGLWindow::loadNewObject(objLoader& objData) {
-    std::string fileName = "";
-    char c;
-
-    std::cout << "Enter object filename: "; // Type a number and press enter
-    
-    while(true) {
-        if (std::cin.peek() == '\n') {
-            break;
-        }
-        else {
-            std::cin >> c;
-            fileName.push_back(c);
-        }
-    }
+void OpenGLWindow::openNewObject(string filename) {
     char* namePointer;
-    namePointer = &fileName[0];
-    int status = objData.load(namePointer); // Returns 0 on error
-
-    return status;
+    namePointer = &filename[0];
+    int status = objData.load(namePointer); // Returns 0 on error.
+    if (status == 0) {
+        return;
+    }
+    printf("Loading geometry...\n");
+    handleNewObject();
 }
