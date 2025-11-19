@@ -63,6 +63,28 @@ Matrix::Matrix(float temp_mat[4][4]) {
     }
 }
 
+Matrix::Matrix(Vector4 v1, Vector4 v2, Vector4 v3, Vector4 v4) {
+    mat[0] = v1.vec[0];
+    mat[1] = v2.vec[0];
+    mat[2] = v3.vec[0];
+    mat[3] = v4.vec[0];
+    
+    mat[4] = v1.vec[1];
+    mat[5] = v2.vec[1];
+    mat[6] = v3.vec[1];
+    mat[7] = v4.vec[1];
+    
+    mat[8] = v1.vec[2];
+    mat[9] = v2.vec[2];
+    mat[10] = v3.vec[2];
+    mat[11] = v4.vec[2];
+
+    mat[12] = v1.vec[3];
+    mat[13] = v2.vec[3];
+    mat[14] = v3.vec[3];
+    mat[15] = v4.vec[3];
+}
+
 /**
  * Multiplies the left matrix with the right matrix, order matters.
  * @param rhs a reference to the right matrix

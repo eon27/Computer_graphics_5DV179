@@ -67,6 +67,8 @@ class Matrix {
 
         Matrix(float temp_mat[4][4]);
 
+        Matrix(Vector4 v1, Vector4 v2, Vector4 v3, Vector4 v4);
+
         Matrix operator*(const Matrix& rhs);
 
         void translate(float dx, float dy, float dz);
