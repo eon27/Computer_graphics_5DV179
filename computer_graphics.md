@@ -541,3 +541,166 @@ main coordinate systems:
 
     * Handled by openGL
 
+# Lecture 4
+## Object to pixels
+### Graphics pipeline
+Application -> Vertex shader -> Tesselation -> geometry shader -> Clipping -> Screen mapping(Orthogonal projection) -> Rasterization[Triangle setup -> Triangle traversal] -> Fragment shader -> Merging or Per-fragment operations -> Frame-buffer 
+## Culling
+### View frustum culling
+Removes objects outside the frustum, happens in both cpu and gpu.
+
+Purpose: Render as few objects as possible
+
+Hierarchical processing can be done by using a spatial data structure representing the bounding volume hierarchy.
+
+Also done in the clipping stage on the GPU. But this is later in the process and we want to remove as much as possible in the begining to increase efficiency.
+### Occlusion Culling
+Removes hidden surfaces and objectes that are blocked by other objects. Usually gpu based but can be a mix as well.
+
+Three categories:
+1. Object-space method
+    * Work on object itself
+    * BSP-trees, planters algorith
+    * In the geometry processing stage
+2. Image-space method
+    * Work on the projected objects
+    * In the fragment processing stage
+    * Frequently used for real-time rendering
+3. Ray space method
+    * Work in a dual space
+
+#### Some existing culling methods/algorithms
+- Depth buffer method
+    - Image-space
+    - Algorithm:
+        - Initialize the depthbuffer to 1
+        - Initialize the framebuffer to background color
+        - For each polygon in scene:
+            - For each projected polygon pixel calculate depth
+            - If the depth is less then at depthbuffer(x,y) the overwrite
+            - Calculate the color with the new depthvalue
+- Hierarchical z-buffering
+- Occlusion queries
+
+
+### Backface culling
+Removes surfaces that are facing away from the view
+
+Calculate the dot product of the face normal, calculated from the vertices in counter clockwise order. If the dot product is negative then the face is pointing away from the perspective(camera)
+
+See slide 15 
+
+## Clipping
+All faces that intersect the boarder of the NDC cube are clipped.
+If needed new vertices and triangles are created.
+
+### Cohen-Sutherland algorithm
+Divide the space into nine areas by drawing parallell lines at the right and left of screen and parallell at the top and bottom.
+
+the areas are given codes
+||||
+|---|---|---|
+|1001|1000|1010|
+|0001|0000|0010|
+|0101|0100|0110|
+
+Denote in which area a line begins and ends. Then by bit operations we can check if a line moves from one area to a neighbouring which means that it does not cross the middle (inside the frame).
+
+### Parametric form / Liang-Barsky Clipping
+Use math where the lines are represented as mathematical lines, then we can find where they intersect with the clipping lines at the sides of the frame.
+
+### Bounding box
+Create a simpler form that covers the object which can be used when checking if the object should be culled. The simpler shape can only awnser if it should be culled or not. If the simpler shape is clipping the frame, then we use a more detailed clipping on the object.
+## Rasterization
+Fragment:
+* Located at screen coordinates (x,y) as real numbers
+* Has depth information and other attributes such as color and texture coordinates
+* Attributes determined by interpolating values at vertices
+
+Pixels:
+* Pixel location (ix,iy) as interger numbers
+* In OpenGL, pixel center located at (𝑖𝑥.5, 𝑖𝑦.5) in screen coordinates
+* Pixel color determined later using color, texture, and other vertex
+properties in the fragment processing stage
+
+### Line drawing algorithms
+* Lines should appear straight, not jagged
+* Lines should terminate accurately
+* Lines should have constant density
+* The line density should be independent of line angle
+
+#### Digital Differential Analyzer (DDA)
+Draw line from (𝑥0, 𝑦0) to (𝑥1, 𝑦1)
+
+    LineDDA(int x0, int y0, int xl, int yl) {
+        int dx,dy,steps,k;
+        float xinc,yinc,x,y;
+        dx = x1-x0;
+        dy = y1-y0;
+        
+        if (abs(dx) > abs(dy))
+            steps = abs(dx);
+        else
+            steps = abs(dy);
+        
+        xinc = dx/steps;
+        yinc = dy/steps;
+        x = x0; y = y0;
+        
+        DrawPixel(round(x),round(y));
+        
+        for (k = 1; k <= steps; ++k) {
+            x = x + xinc;
+            y = y + yinc;
+            DrawPixel(round(x), round(y));
+        }
+    }
+
+#### Bresenham algorithm
+- Efficient
+- Implemented in hardware as
+one single instruction
+- Integer Calculations
+- Uses Symmetry
+- Eight cases, one for each
+octant of the line slope
+- Adapted to display circles,
+ellipses, and curves
+
+        𝑎 and 𝑏 – distances to pixel
+        center
+        𝑑 = Δ𝑥(𝑏 − 𝑎)
+        𝑑 is an integer
+        𝑑 > 0 use upper pixel
+        𝑑 ≤ 0 use lower pixel
+![alt text](BresenhamAlgorithm.png)
+
+Recursive generalized algorithm where 𝑑0 = 2Δ𝑦 − Δ𝑥 and
+||||
+|---|---|---|
+|𝑑𝑘+1 = 𝑑𝑘 + |{2(Δ𝑦 − Δ𝑥)| if 𝑑𝑘 > 0|
+|            |{2Δ𝑦| otherwise|
+        
+        LineBresenham(int x0, int y0, int xl, int yl) {
+            int x,y;
+            int dx,dy,d;
+        
+            dx = x1-x0;
+            dy = y1-y0;
+            d = 2*dy - dx;
+            y = y0;
+        
+            for (x = x0; x <= x1; ++x) {
+                DrawPixel(x,y);
+                if (d > 0) {
+                    y = y + 1;
+                    d = d - 2*dx;
+                }
+                d = d + 2*dy;
+            }
+        }
+
+#### Polygon scan conversion
+Look it up but kinda mehh.
+
+## Aliasing
