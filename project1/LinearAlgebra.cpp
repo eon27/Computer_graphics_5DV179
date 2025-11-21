@@ -113,16 +113,21 @@ Matrix Matrix::operator*(const Matrix& rhs) {
  * Moddifies the current matrix.
  */
 void Matrix::translate(float dx, float dy, float dz) {
+    float xScale = 1;
+    float yScale = 1;
+    float zScale = 1;
+    if (mat[0] != 0) xScale = mat[0];
+    if (mat[5] != 0) yScale = mat[5];
+    if (mat[10] != 0) zScale = mat[10];
     float translation_array[4][4] = {
-        {1,0,0,dx},
-        {0,1,0,dy},
-        {0,0,1,dz},
+        {1,0,0,dx/xScale},
+        {0,1,0,dy/yScale},
+        {0,0,1,dz/zScale},
         {0,0,0,1}};
     Matrix translation_matrix(translation_array);
     
     *this = (*this) * translation_matrix;
 }
-
 /**
  * Scales the matrix in x,y,z direction.
  * Moddifies the current matrix.
