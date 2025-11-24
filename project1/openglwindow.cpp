@@ -247,14 +247,14 @@ OpenGLWindow::DrawGui()
 
     // Change these variables to be class variables instead of static
     // and delete the static declarations below
-    static string objFileName;
-    static string objFilePath;
+    string objFileName;
+    string objFilePath;
 
-    static float fov = 60.0f;
-    static float farplane = 500.0f;
-    static float top = 1.0f;
-    static float obliqueScale = 0.0f;
-    static float obliqueAngleRad = M_PI/4.0f;
+    float fov = 60.0f;
+    float farplane = 500.0f;
+    float top = 1.0f;
+    float obliqueScale = 0.0f;
+    float obliqueAngleRad = M_PI/4.0f;
     // ...until here
 
     static ImGuiSliderFlags flags = ImGuiSliderFlags_AlwaysClamp;

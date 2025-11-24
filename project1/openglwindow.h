@@ -55,4 +55,13 @@ private:
     GLFWwindow* glfwWindow;
     int windowWidth = 0;
     int windowHeight = 0;
+
+    string objFileName;
+    string objFilePath;
+
+    float fov;
+    float farplane;
+    float top;
+    float obliqueScale;
+    float obliqueAngleRad;
 };
