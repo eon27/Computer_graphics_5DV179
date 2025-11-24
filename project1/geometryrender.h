@@ -7,6 +7,7 @@
 #pragma once
 
 #include "openglwindow.h"
+#include "mycamera.hpp"
 
 typedef float Mat4x4[16];
 
@@ -45,6 +46,8 @@ private:
     std::vector<Vector3> centerAndScaleObject(std::vector<Vector3> vertexList);
     void loadGeometry(std::vector<Vector3> vertexList, std::vector<int> indexList);
     void loadObjectGeometry();
+
+    MyCamera cam;
 
     Matrix matModel = Matrix();
     Matrix matView = Matrix();

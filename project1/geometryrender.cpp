@@ -6,6 +6,7 @@
  */
 
 #include "geometryrender.h"
+#include "mycamera.hpp"
 
 using namespace std;
 
@@ -42,6 +43,8 @@ void GeometryRender::initialize()
 
     glBindVertexArray(0);
     glUseProgram(0);
+
+    cam = MyCamera(500, 60);
 }
 
 void GeometryRender::loadGeometry(vector<Vector3> vertexList, vector<int> indexList)
@@ -66,8 +69,8 @@ void GeometryRender::loadGeometry(vector<Vector3> vertexList, vector<int> indexL
     glEnableVertexAttribArray(locVertices);
     
     glUniformMatrix4fv(locModel, 1, GL_TRUE, matModel.mat);
-    glUniformMatrix4fv(locView, 1, GL_TRUE, matView.mat);
-    glUniformMatrix4fv(locProjection, 1, GL_TRUE, matProjection.mat);
+    glUniformMatrix4fv(locView, 1, GL_TRUE, cam.getViewMatrix().mat);
+    glUniformMatrix4fv(locProjection, 1, GL_TRUE, cam.getProjectionMatrix().mat);
 
     // Load object data to the array buffer and index array
     size_t vSize = vertices.size()*sizeof(float)*3;
@@ -169,6 +172,7 @@ void GeometryRender::passAction(int action) {
     glUseProgram(program);
     switch (action)
     {
+    // Rotating the object
     case GLFW_KEY_UP:
         matModel.rotatex(-M_PI/18);
         break;
@@ -181,6 +185,7 @@ void GeometryRender::passAction(int action) {
     case GLFW_KEY_RIGHT:
         matModel.rotatey(-M_PI/18);
         break;
+    // Moving the object in 3d
     case GLFW_KEY_J:
         matModel.translate(-0.1, 0, 0);
         break;
@@ -193,9 +198,37 @@ void GeometryRender::passAction(int action) {
     case GLFW_KEY_K:
         matModel.translate(0, -0.1, 0);
         break;
+    case GLFW_KEY_N:
+        matModel.translate(0, 0, 0.1);
+        break;
+    case GLFW_KEY_M:
+        matModel.translate(0, 0, -0.1);
+        break;
+    
+    // Moving the camera in 3d
+    case GLFW_KEY_W:
+        cam.move(0,0,1);
+        break;
+    case GLFW_KEY_S:
+        cam.move(0,0,-1);
+        break;
+    case GLFW_KEY_A:
+        cam.move(1,0,0);
+        break;
+    case GLFW_KEY_D:
+        cam.move(-1,0,0);
+        break;
+    case GLFW_KEY_Q:
+        cam.move(0,-1,0);
+        break;
+    case GLFW_KEY_E:
+        cam.move(0,1,0);
+        break;
+    
     default:
         break;
     }
+    glUniformMatrix4fv(locView, 1, GL_TRUE, cam.getViewMatrix().mat);
     glUniformMatrix4fv(locModel, 1, GL_TRUE, matModel.mat);
     glUseProgram(0);
 }
