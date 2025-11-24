@@ -332,6 +332,17 @@ Vector3 Vector3::operator-(const Vector3& rhs) {
 	return result;
 }
 
+Vector3 Vector3::normalize() {
+    Vector3 temp = Vector3(vec[0], vec[1], vec[2]);
+    float length = sqrt((vec[0] * vec[0]) + (vec[1] * vec[1]) + (vec[2] * vec[2]));
+    if (length) {
+        vec[0] = vec[0] / length;
+        vec[1] = vec[1] / length;
+        vec[2] = vec[2] / length;
+    }
+    return temp;
+}
+
 /**
  * Constructs a (0,0,0,0) vector.
  */

@@ -25,6 +25,7 @@ class Vector3 {
         
         Vector3 operator-(const Vector3& rhs);
         
+        Vector3 normalize();
     };
 
 /**
