@@ -245,17 +245,8 @@ OpenGLWindow::DrawGui()
 {
     IM_ASSERT(ImGui::GetCurrentContext() != NULL && "Missing dear imgui context.");
 
-    // Change these variables to be class variables instead of static
-    // and delete the static declarations below
     string objFileName;
     string objFilePath;
-
-    float fov = 60.0f;
-    float farplane = 500.0f;
-    float top = 1.0f;
-    float obliqueScale = 0.0f;
-    float obliqueAngleRad = M_PI/4.0f;
-    // ...until here
 
     static ImGuiSliderFlags flags = ImGuiSliderFlags_AlwaysClamp;
     static ImGuiFileDialog fileDialog;
@@ -280,7 +271,6 @@ OpenGLWindow::DrawGui()
     
     if (ImGui::CollapsingHeader("Projection")) {
         const char* items[] = {"Perspective", "Parallel" };
-        static int proj_current_idx = 0;
         if (ImGui::Combo("projektion", &proj_current_idx, items, IM_ARRAYSIZE(items), IM_ARRAYSIZE(items)));
         if (proj_current_idx == 0) {
             ImGui::SliderFloat("Field of view",&fov, 20.0f, 160.0f, "%1.0f", flags);

@@ -49,6 +49,12 @@ protected:
 
     void reshape(const int width, const int height) const;
 
+    float fov = 60.0f;
+    float farplane = 500.0f;
+    float top = 1.0f;
+    float obliqueScale = 0.0f;
+    float obliqueAngleRad = M_PI/4.0f;
+    int proj_current_idx = 0;
 private:
     void DrawGui();
 
@@ -59,9 +65,4 @@ private:
     std::string objFileName;
     std::string objFilePath;
 
-    float fov;
-    float farplane;
-    float top;
-    float obliqueScale;
-    float obliqueAngleRad;
 };
