@@ -47,9 +47,21 @@ private:
     void loadGeometry(std::vector<Vector3> vertexList, std::vector<int> indexList);
     void loadObjectGeometry();
 
+    void updateView();
+
     MyCamera cam;
 
     Matrix matModel = Matrix();
-    Matrix matView = Matrix();
-    Matrix matProjection = Matrix();
+    Matrix matView = Matrix(
+        1,0,0,0,
+        0,1,0,0,
+        0,0,1,-2,
+        0,0,0,1
+    );
+    Matrix matProjection = Matrix(
+        1.28,0,0,0,
+        0,2.75,0,0,
+        0,0,-1.67,-53.33,
+        0,0,-1,0
+    );
 };
