@@ -19,5 +19,6 @@ class MyCamera
 		Matrix getViewMatrix();
 		Matrix getProjectionMatrix();
 		void move(float x, float y, float z);
+		void updateView(float farDistance, float fovAngle);
 };
 #endif
