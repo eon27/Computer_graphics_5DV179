@@ -39,7 +39,7 @@ class Vector4 {
 
         Vector4(float x, float y, float z);
 
-        Vector4(Vector3 vector);
+        Vector4(Vector3 vector, float w);
 
         Vector4(float x, float y, float z, float w);
 
@@ -75,6 +75,8 @@ class Matrix {
         void translate(float dx, float dy, float dz);
 
         void scale(float sx, float sy, float sz);
+
+        Matrix transpose();
         
         void rotatex(float a);
 

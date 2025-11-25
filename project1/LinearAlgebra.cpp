@@ -141,6 +141,19 @@ void Matrix::scale(float sx, float sy, float sz) {
     
     *this = (*this) * scale_matrix;
 }
+
+Matrix Matrix::transpose() {
+    Matrix temp = Matrix();
+    for (size_t i = 0; i < 4; i++)
+    {
+        for (size_t j = 0; j < 4; j++)
+        {
+            temp.mat[(4*i)+j] = mat[(4*j)+i];
+        }
+        
+    }
+    return temp;
+}
         
 /**
  * Rotates the matrix around the x-axis by a given amount of radians.
@@ -332,6 +345,10 @@ Vector3 Vector3::operator-(const Vector3& rhs) {
 	return result;
 }
 
+/**
+ * Finds the length of the vector with pythagoran theorem and then divides the x,y,z components by the length.
+ * @return a new vector that is the normalization result
+ */
 Vector3 Vector3::normalize() {
     Vector3 temp = Vector3(vec[0], vec[1], vec[2]);
     float length = sqrt((vec[0] * vec[0]) + (vec[1] * vec[1]) + (vec[2] * vec[2]));
@@ -366,14 +383,15 @@ Vector4::Vector4(float x, float y, float z) {
 }
 
 /**
- * Constructs a new vector by taking a vector and copies the values into the first three of the new vector.
+ * Constructs a new vector by taking a vector and copies the values into the first three of the new vector and takes an argument for the forth value.
  * @param vector 3d vector with x,y,z values for the new vector
+ * @param w the forth value of the vector
  */
-Vector4::Vector4(Vector3 vector) {
+Vector4::Vector4(Vector3 vector, float w) {
     vec[0] = vector.vec[0];
     vec[1] = vector.vec[1];
     vec[2] = vector.vec[2];
-    vec[3] = 1;
+    vec[3] = w;
 }
 
 /**
