@@ -351,11 +351,11 @@ Vector3 Vector3::operator-(const Vector3& rhs) {
  */
 Vector3 Vector3::normalize() {
     Vector3 temp = Vector3(vec[0], vec[1], vec[2]);
-    float length = sqrt((vec[0] * vec[0]) + (vec[1] * vec[1]) + (vec[2] * vec[2]));
+    float length = sqrt((temp.vec[0] * temp.vec[0]) + (temp.vec[1] * temp.vec[1]) + (temp.vec[2] * temp.vec[2]));
     if (length) {
-        vec[0] = vec[0] / length;
-        vec[1] = vec[1] / length;
-        vec[2] = vec[2] / length;
+        temp.vec[0] = temp.vec[0] / length;
+        temp.vec[1] = temp.vec[1] / length;
+        temp.vec[2] = temp.vec[2] / length;
     }
     return temp;
 }
