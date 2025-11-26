@@ -24,5 +24,6 @@ class MyCamera
 		Matrix getProjectionMatrix();
 		void move(float x, float y, float z);
 		void updateView(float fovAngle, float farDistance, float planeTop, float oScale, float oAngleRad, int proj_current_idx);
+		void rotate(float deltaX, float deltaY);
 };
 #endif

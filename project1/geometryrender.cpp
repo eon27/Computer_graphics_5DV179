@@ -223,10 +223,10 @@ void GeometryRender::passAction(int action) {
         cam.move(0,0,moveCamera);
         break;
     case GLFW_KEY_A:
-        cam.move(-moveCamera,0,0);
+        cam.move(moveCamera,0,0);
         break;
     case GLFW_KEY_D:
-        cam.move(moveCamera,0,0);
+        cam.move(-moveCamera,0,0);
         break;
     case GLFW_KEY_Q:
         cam.move(0,-moveCamera,0);
@@ -250,6 +250,13 @@ void GeometryRender::passAction(int action) {
     //cam.getViewMatrix().printMatrix();
     glUniformMatrix4fv(locView, 1, GL_TRUE, cam.getViewMatrix().mat);
     glUniformMatrix4fv(locModel, 1, GL_TRUE, matModel.mat);
+    glUseProgram(0);
+}
+
+void GeometryRender::rotateCamera(float deltaX, float deltaY) {
+    glUseProgram(program);
+    cam.rotate(deltaX/180, deltaY/180);
+    glUniformMatrix4fv(locView, 1, GL_TRUE, cam.getViewMatrix().mat);
     glUseProgram(0);
 }
 

@@ -21,6 +21,7 @@ public:
     void initialize();
     virtual void display() override;
     virtual void passAction(int action) override;
+    virtual void rotateCamera(float deltaX, float deltaY);
     virtual void handleNewObject() override;
 
 private:

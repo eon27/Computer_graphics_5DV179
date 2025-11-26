@@ -101,3 +101,13 @@ void MyCamera::updateView(float fovAngle, float farDistance, float planeTop, flo
 	obliqueAngleRad = oAngleRad;
 	parallellPerspective = proj_current_idx;
 }
+
+void MyCamera::rotate(float deltaX, float deltaY) {
+	Matrix rotationMatrix = Matrix();
+	// Move the camera position to 0
+	rotationMatrix.translate(pos.vec[0], pos.vec[1], pos.vec[2]);
+	rotationMatrix.rotatey(deltaX);
+	rotationMatrix.rotatex(deltaY);
+	rotationMatrix.translate(-pos.vec[0], -pos.vec[1], -pos.vec[2]);
+	refPoint = rotationMatrix * refPoint;
+}

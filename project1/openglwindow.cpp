@@ -240,6 +240,34 @@ OpenGLWindow::keyCallback(GLFWwindow* window, int key, int scancode, int action,
     }
 }
 
+// Handling input with the gui as recomended by https://github.com/ocornut/imgui/blob/master/docs/FAQ.md#q-how-can-i-tell-whether-to-dispatch-mousekeyboard-to-dear-imgui-or-my-application
+void
+OpenGLWindow::mouseCallback(GLFWwindow* window, double xpos, double ypos) {
+    ImGuiIO& io = ImGui::GetIO();
+    io.AddMousePosEvent(xpos, ypos);
+    if (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED) {
+        // Flipping delta Y because positiv Y is downwards.
+        rotateCamera(mousePosX-xpos, ypos-mousePosY);
+        mousePosX = xpos;
+        mousePosY = ypos;
+    }
+}
+
+void
+OpenGLWindow::mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+    ImGuiIO& io = ImGui::GetIO();
+    io.AddMouseButtonEvent(button, action);
+    if (!io.WantCaptureMouse) {
+        if (button == GLFW_MOUSE_BUTTON_RIGHT) {
+            if (action == GLFW_PRESS) {
+                glfwGetCursorPos(window, &mousePosX, &mousePosY);
+                glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+            }
+            else if (action == GLFW_RELEASE) glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        }
+    }
+}
+
 void
 OpenGLWindow::DrawGui()
 {

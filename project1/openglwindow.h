@@ -27,11 +27,14 @@ public:
     virtual void errorCallback(int error, const char* desc);
     virtual void resizeCallback(GLFWwindow* window, int width, int height);
     virtual void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+    virtual void mouseCallback(GLFWwindow* window, double xpos, double ypos);
+    virtual void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods);
 
     void start();
     virtual void initialize() = 0;
     virtual void display() = 0;
     virtual void passAction(int action) = 0;
+    virtual void rotateCamera(float deltaX, float deltaY) = 0;
     void displayNow();
 
     void openNewObject(std::string filename);
@@ -61,6 +64,9 @@ private:
     GLFWwindow* glfwWindow;
     int windowWidth = 0;
     int windowHeight = 0;
+
+    double mousePosX;
+    double mousePosY;
 
     std::string objFileName;
     std::string objFilePath;

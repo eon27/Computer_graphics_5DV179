@@ -229,7 +229,7 @@ Vector4 Matrix::operator*(const Vector4& rhs) {
 	float vector[4] = {0,0,0,0};
 	for (int r = 0; r < 4; r++) {
 		for (int c = 0; c < 4; c++) {
-			vector[r] += this->mat[(r*4)+c] * rhs.vec[r];
+			vector[r] += this->mat[(r*4)+c] * rhs.vec[c];
 		}
 	}
 	Vector4 result(vector);
