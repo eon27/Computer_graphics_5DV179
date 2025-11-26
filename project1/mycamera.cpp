@@ -14,6 +14,8 @@ MyCamera::MyCamera() {
 
 	far = 500;
 	fov = 60;
+
+	
 }
 
 /**
@@ -60,14 +62,27 @@ Matrix MyCamera::getViewMatrix() {
  * @return a new projection/perspectiv matrix
  */
 Matrix MyCamera::getProjectionMatrix() {
-	float halfTanFOV = tan((fov/2)*(M_PI/180));
-	Matrix temp = Matrix(
-		1/halfTanFOV, 0, 0, 0,
-		0, 1/halfTanFOV, 0, 0,
-		0, 0, -(far+near)/(far-near), (-2*far*near)/(far-near),
-		0, 0, -1, 0
-	);
-	return temp;
+	if (parallellPerspective) {
+		Matrix temp = Matrix(
+			1,0,obliqueScale*cos(obliqueAngleRad),0,
+			0,1,obliqueScale*sin(obliqueAngleRad),0,
+			0,0,1,0,
+			0,0,0,1
+		);
+		temp.translate(0,0,(-2*far*near)/(far-near));
+		temp.scale(1/top,1/top,-(far+near)/(far-near));
+		return temp;
+
+	} else {
+		float halfTanFOV = tan((fov/2)*(M_PI/180));
+		Matrix temp = Matrix(
+			1/halfTanFOV, 0, 0, 0,
+			0, 1/halfTanFOV, 0, 0,
+			0, 0, -(far+near)/(far-near), (-2*far*near)/(far-near),
+			0, 0, -1, 0
+		);
+		return temp;		
+	}
 }
 
 /**
@@ -78,7 +93,11 @@ void MyCamera::move(float x, float y, float z) {
 	refPoint = refPoint + Vector4(x,y,z,0);
 }
 
-void MyCamera::updateView(float farDistance, float fovAngle) {
+void MyCamera::updateView(float fovAngle, float farDistance, float planeTop, float oScale, float oAngleRad, int proj_current_idx) {
 	far = farDistance;
 	fov = fovAngle;
+	top = planeTop;
+	obliqueScale = oScale;
+	obliqueAngleRad = oAngleRad;
+	parallellPerspective = proj_current_idx;
 }
