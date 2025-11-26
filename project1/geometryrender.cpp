@@ -172,8 +172,7 @@ void GeometryRender::display()
 }
 
 void GeometryRender::updateView() {
-    cam.updateView(farplane, fov);
-    printf("Far: %f \tFov: %f\n", farplane, fov);
+    cam.updateView(fov, farplane, top, obliqueScale, obliqueAngleRad, proj_current_idx);
     glUniformMatrix4fv(locProjection, 1, GL_TRUE, cam.getProjectionMatrix().mat);
 }
 
@@ -191,17 +190,17 @@ void GeometryRender::passAction(int action) {
         matModel.rotatex(M_PI/18);
         break;
     case GLFW_KEY_LEFT:
-        matModel.rotatey(M_PI/18);
+        matModel.rotatey(-M_PI/18);
         break;
     case GLFW_KEY_RIGHT:
-        matModel.rotatey(-M_PI/18);
+        matModel.rotatey(M_PI/18);
         break;
     // Moving the object in 3d
     case GLFW_KEY_J:
-        matModel.translate(-moveObject, 0, 0);
+        matModel.translate(moveObject, 0, 0);
         break;
     case GLFW_KEY_L:
-        matModel.translate(moveObject, 0, 0);
+        matModel.translate(-moveObject, 0, 0);
         break;
     case GLFW_KEY_I:
         matModel.translate(0, moveObject, 0);
@@ -224,10 +223,10 @@ void GeometryRender::passAction(int action) {
         cam.move(0,0,moveCamera);
         break;
     case GLFW_KEY_A:
-        cam.move(moveCamera,0,0);
+        cam.move(-moveCamera,0,0);
         break;
     case GLFW_KEY_D:
-        cam.move(-moveCamera,0,0);
+        cam.move(moveCamera,0,0);
         break;
     case GLFW_KEY_Q:
         cam.move(0,-moveCamera,0);
@@ -236,6 +235,15 @@ void GeometryRender::passAction(int action) {
         cam.move(0,moveCamera,0);
         break;
     
+    case GLFW_KEY_P:
+        printf("Material:\n");
+        matModel.printMatrix();
+        printf("View:\n");
+        cam.getViewMatrix().printMatrix();
+        printf("Projection:\n");
+        cam.getProjectionMatrix().printMatrix();
+        printf("\n\n");
+        break;
     default:
         break;
     }
