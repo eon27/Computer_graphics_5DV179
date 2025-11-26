@@ -84,6 +84,8 @@ class Matrix {
 
         void rotatez(float a);
 
+        void floatingpointError(float number);
+
         Vector4 operator*(const Vector4& rhs);
 
         Matrix operator+(const Matrix& rhs);

@@ -116,9 +116,9 @@ void Matrix::translate(float dx, float dy, float dz) {
     float xScale = 1;
     float yScale = 1;
     float zScale = 1;
-    if (mat[0] != 0) xScale = mat[0];
-    if (mat[5] != 0) yScale = mat[5];
-    if (mat[10] != 0) zScale = mat[10];
+    // if (mat[0] != 0) xScale = mat[0];
+    // if (mat[5] != 0) yScale = mat[5];
+    // if (mat[10] != 0) zScale = mat[10];
     float translation_array[4][4] = {
         {1,0,0,dx/xScale},
         {0,1,0,dy/yScale},
@@ -154,6 +154,17 @@ Matrix Matrix::transpose() {
     }
     return temp;
 }
+
+#define SMALLNUMBER 0.000001
+/**
+ * Rounds all the small numbers in the matrix to 0.
+ * @param number numbers smaller than this are rounded to 0
+ */
+void Matrix::floatingpointError(float number = SMALLNUMBER) {
+    for (size_t i = 0; i < 16; i++) {
+        if (abs(mat[i]) < SMALLNUMBER) mat[i] = 0;
+    }
+}
         
 /**
  * Rotates the matrix around the x-axis by a given amount of radians.
@@ -169,6 +180,8 @@ void Matrix::rotatex(float a) {
     Matrix rotation_matrix(rotation_array);
     
     *this = (*this) * rotation_matrix;
+    // Because cos and sin operations may result in small numbers we round the matrix.
+    floatingpointError();
 }
  
 /**
@@ -185,6 +198,8 @@ void Matrix::rotatey(float a) {
     Matrix rotation_matrix(rotation_array);
 
     *this = (*this) * rotation_matrix;
+    // Because cos and sin operations may result in small numbers we round the matrix.
+    floatingpointError();
 }
 
 /**
@@ -201,6 +216,8 @@ void Matrix::rotatez(float a) {
     Matrix rotation_matrix(rotation_array);
 
     *this = (*this) * rotation_matrix;
+    // Because cos and sin operations may result in small numbers we round the matrix.
+    floatingpointError();
 }
 
 /**
