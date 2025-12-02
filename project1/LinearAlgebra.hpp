@@ -19,13 +19,15 @@ class Vector3 {
 
         float operator*(const Vector3& rhs);
 
-        Vector3 operator*(const float rhs);
+        Vector3 operator*(const float& rhs) const;
 
         Vector3 operator+(const Vector3& rhs);
         
         Vector3 operator-(const Vector3& rhs);
         
         Vector3 normalize();
+
+        float length();
     };
 
 /**
@@ -48,6 +50,8 @@ class Vector4 {
         Vector4 operator+(const Vector4& rhs);
 
         Vector4 operator-(const Vector4& rhs);
+
+        Vector4 operator*(const float& rhs);
 };
 
 /**
@@ -83,6 +87,8 @@ class Matrix {
         void rotatey(float a);
 
         void rotatez(float a);
+
+        void rotateAroundAxis(const Vector3& axis, float a);
 
         void floatingpointError(float number);
 

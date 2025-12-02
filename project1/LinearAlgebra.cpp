@@ -220,6 +220,31 @@ void Matrix::rotatez(float a) {
     floatingpointError();
 }
 
+void Matrix::rotateAroundAxis(const Vector3& axis, float a) {
+
+	float const c = cos(a);
+    const float c1 = 1.0f - c;
+	float const s = sin(a);
+	
+	Vector3 temp = Vector3(axis * c1);
+	
+	Matrix rotate = Matrix();
+	
+	rotate.mat[0] = c + temp.vec[0] * axis.vec[0];
+	rotate.mat[1] = temp.vec[0] * axis.vec[1] + s * axis.vec[2];
+	rotate.mat[2] = temp.vec[0] * axis.vec[2] - s * axis.vec[1];
+
+	rotate.mat[4] = temp.vec[1] * axis.vec[0] - s * axis.vec[2];
+	rotate.mat[5] = c + temp.vec[1] * axis.vec[1];
+	rotate.mat[6] = temp.vec[1] * axis.vec[2] + s * axis.vec[0];
+	
+	rotate.mat[8] = temp.vec[2] * axis.vec[0] + s * axis.vec[1];
+	rotate.mat[9] = temp.vec[1] * axis.vec[1] - s * axis.vec[0];
+	rotate.mat[10] = c + temp.vec[2] * axis.vec[2];
+
+    *this = (*this) * rotate;
+}
+
 /**
  * Multiplies the left matrix with the right matrix, order matters.
  * @param rhs referens to the right matrix
@@ -312,7 +337,12 @@ Vector3::Vector3(double vector[3]) {
  * @return the single value result
  */
 float Vector3::operator*(const Vector3& rhs) {
-    return (this->vec[0] * rhs.vec[0] + this->vec[1] * rhs.vec[1] + this->vec[2] * rhs.vec[2]);
+    return (vec[0] * rhs.vec[0] + vec[1] * rhs.vec[1] + vec[2] * rhs.vec[2]);
+}
+
+Vector3 Vector3::operator*(const float& rhs) const {
+    Vector3 temp = Vector3(vec[0]*rhs, vec[1]*rhs, vec[2]*rhs);
+    return temp;
 }
 
 /**
@@ -375,6 +405,10 @@ Vector3 Vector3::normalize() {
         temp.vec[2] = temp.vec[2] / length;
     }
     return temp;
+}
+
+float Vector3::length() {
+    return sqrt(vec[0] * vec[0] + vec[1] * vec[1] + vec[2] * vec[2]);
 }
 
 /**
@@ -450,4 +484,12 @@ Vector4 Vector4::operator+(const Vector4& rhs) {
 Vector4 Vector4::operator-(const Vector4& rhs) {
 	Vector4 result({this->vec[0] - rhs.vec[0], this->vec[1] - rhs.vec[1], this->vec[2] - rhs.vec[2], this->vec[3] - rhs.vec[3]});
 	return result;
+}
+
+Vector4 Vector4::operator*(const float& rhs) {
+    Vector4 temp = Vector4();
+    for (int i = 0; i < 4; i++) {
+        temp.vec[i] = vec[i] * rhs;
+    }
+    return temp;
 }
