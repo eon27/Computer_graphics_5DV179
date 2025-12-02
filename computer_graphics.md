@@ -704,3 +704,57 @@ Recursive generalized algorithm where 𝑑0 = 2Δ𝑦 − Δ𝑥 and
 Look it up but kinda mehh.
 
 ## Aliasing
+
+
+
+
+
+# Lecture Shading
+## Flat shading
+normal vector for face = (v2-v1) x (v1-v0)
+
+Shading each pixel depending on the face angle
+
+## Gouraud (per-vertex) shading
+Shading each pixel by the vertex shader by interpolating between the vertices
+
+Highlight points on the object are prone to artifacts
+
+## Phong (per-pixel) shading
+Applied on each point in the vertex shader
+
+Interpolates the normals between the vertices
+
+## Cel shading
+Sobel filter and color limit to phong shader
+
+## Multipass shader
+### Forward shader
+Multiple passes in parallel
+
+Each fragment is processed independently from vertex to lightning
+### Deferred shading
+Add the lightning to everything at once.
+
+Requires all materials to be stored at the same time = high memory cost
+
+It can not deal with transparency
+
+## Shadows
+Realtime shadows:
+- Shadow mapping
+- Shadow volumes
+- ray traced
+
+Static shadows:
+
+### Shadowmapping
+Create the shadows by rendering from the light point of view with a Z-buffer.
+Then creates a shadow mapp from that information that is a depthmap.
+
+Then render from the camera using the shadowmap calculated by the first pass.
+
+This makes uneven surfaces sometimes have hard shadows on them. So we apply a slope based bias (offset) to the depth test.
+
+Objects far from the light source has lower resolution, to fix this we
+
