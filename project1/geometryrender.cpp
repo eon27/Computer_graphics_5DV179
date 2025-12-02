@@ -172,7 +172,9 @@ void GeometryRender::display()
 }
 
 void GeometryRender::updateView() {
-    cam.updateView(fov, farplane, top, obliqueScale, obliqueAngleRad, proj_current_idx);
+    // Must treat them as floats to so they don't get rounded
+    float aspectRatio = ((float) width()) / ((float) height());
+    cam.updateView(fov, farplane, top, obliqueScale, obliqueAngleRad, proj_current_idx, aspectRatio);
     glUniformMatrix4fv(locProjection, 1, GL_TRUE, cam.getProjectionMatrix().mat);
 }
 
@@ -223,10 +225,10 @@ void GeometryRender::passAction(int action) {
         cam.move(0,0,moveCamera);
         break;
     case GLFW_KEY_A:
-        cam.move(moveCamera,0,0);
+        cam.move(-moveCamera,0,0);
         break;
     case GLFW_KEY_D:
-        cam.move(-moveCamera,0,0);
+        cam.move(moveCamera,0,0);
         break;
     case GLFW_KEY_Q:
         cam.move(0,-moveCamera,0);

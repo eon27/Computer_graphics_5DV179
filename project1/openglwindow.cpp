@@ -217,6 +217,8 @@ void
 OpenGLWindow::resizeCallback(GLFWwindow* window, int width, int height)
 {
     reshape(width, height);
+    windowHeight = height;
+    windowWidth = width;
 }
 
 void OpenGLWindow::reshape(const int width, const int height) const {
