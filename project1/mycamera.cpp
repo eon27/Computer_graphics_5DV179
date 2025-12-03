@@ -39,24 +39,35 @@ MyCamera::~MyCamera() {
  * @return a new view matrix
  */
 Matrix MyCamera::getViewMatrix() {
-	// Forward vector
-	Vector4 lookVec = refPoint - pos;
-	Vector3 look3 = Vector3(lookVec.vec[0], lookVec.vec[1], lookVec.vec[2]).normalize();
 
-	Vector3 up3 = Vector3(upVec.vec[0], upVec.vec[1], upVec.vec[2]).normalize();
-	Vector3 right3 = look3.cross(up3).normalize();
-	up3 = right3.cross(look3).normalize();
+	// Algorithm copied from glm::lookAt
+	
+	Vector3 worldUp = Vector3(upVec.vec[0], upVec.vec[1], upVec.vec[2]);
+	Vector3 reference3d = Vector3(refPoint.vec[0], refPoint.vec[1], refPoint.vec[2]);
+	Vector3 position3d = Vector3(pos.vec[0], pos.vec[1], pos.vec[2]);
 
-	Matrix orientation = Matrix(Vector4(right3, 0), Vector4(up3,0), Vector4(-look3.vec[0], -look3.vec[1], -look3.vec[2], 0), Vector4(0, 0, 0, 1));
+	Vector3 forward = (reference3d - position3d).normalize();
+	Vector3 right = worldUp.cross(forward).normalize();
+	Vector3 up = forward.cross(right).normalize();
 
-	Matrix translation = Matrix(
-		1, 0, 0, -pos.vec[0],
-		0, 1, 0, -pos.vec[1],
-		0, 0, 1, -pos.vec[2],
-		0, 0, 0, 1
-	);
-	Matrix temp = orientation * translation;
-	return temp;
+	Matrix result = Matrix();
+	result.mat[0] = right.vec[0];
+	result.mat[1] = right.vec[1];
+	result.mat[2] = right.vec[2];
+	
+	result.mat[4] = up.vec[0];
+	result.mat[5] = up.vec[1];
+	result.mat[6] = up.vec[2];
+	
+	result.mat[8] = forward.vec[0];
+	result.mat[9] = forward.vec[1];
+	result.mat[10] = forward.vec[2];
+
+	result.mat[3] = -(right * position3d);
+	result.mat[7] = -(up * position3d);
+	result.mat[11] = -(forward * position3d);
+
+	return result;
 }
 
 /**
@@ -118,7 +129,7 @@ void MyCamera::rotate(float deltaX, float deltaY) {
 	Matrix rotationMatrix = Matrix();
 
 	rotationMatrix.translate(pos.vec[0], pos.vec[1], pos.vec[2]);
-	rotationMatrix.rotatey(deltaX);
+	rotationMatrix.rotatey(-deltaX);
 
 	// Forward vector
 	Vector4 lookVec = refPoint - pos;
