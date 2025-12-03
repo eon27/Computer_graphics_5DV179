@@ -70,5 +70,17 @@ private:
 
     std::string objFileName;
     std::string objFilePath;
+    std::string textureFileName;
+    std::string textureFilePath;
+    bool textureShow = false;
+
+    float lightPos[3] = {0.0f, 0.0f, 0.0f};
+    float lightColor[3] = {1.0f, 1.0f, 1.0f};
+    float ambientColor[3] = {0.2f, 0.2f, 0.2f};
+
+    float materialAmbient[3] = {.5f, .5f, .5f};
+    float materialDiffuse[3] = {.5f, .5f, .5f};
+    float materialSpecular[3] = {.5f, .5f, .5f};
+    float materialShininess = 1.0f;
 
 };
