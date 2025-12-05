@@ -41,12 +41,12 @@ MyCamera::~MyCamera() {
 Matrix MyCamera::getViewMatrix() {
 
 	// Algorithm copied from glm::lookAt
-	
+
 	Vector3 worldUp = Vector3(upVec.vec[0], upVec.vec[1], upVec.vec[2]);
 	Vector3 reference3d = Vector3(refPoint.vec[0], refPoint.vec[1], refPoint.vec[2]);
 	Vector3 position3d = Vector3(pos.vec[0], pos.vec[1], pos.vec[2]);
 
-	Vector3 forward = (reference3d - position3d).normalize();
+	Vector3 forward = (position3d - reference3d).normalize();
 	Vector3 right = worldUp.cross(forward).normalize();
 	Vector3 up = forward.cross(right).normalize();
 
