@@ -310,6 +310,7 @@ OpenGLWindow::DrawGui()
                 objFileName = fileDialog.GetCurrentFileName();
                 objFilePath = fileDialog.GetCurrentPath();
                 cout << "OBJ file: " << objFileName << endl << "Path: " << objFilePath << endl;
+                openNewObject(objFilePath + '/' + objFileName);
             } else {
                 // Return a message to the user if the file could not be opened
             }
