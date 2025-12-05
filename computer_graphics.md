@@ -758,3 +758,65 @@ This makes uneven surfaces sometimes have hard shadows on them. So we apply a sl
 
 Objects far from the light source has lower resolution, to fix this we
 
+
+# Lecture Parametric curves
+### Motivation
+Can scale a curve without losing resolution
+
+Compact representation, delegate the complexity in the computation
+
+Local control, not using high degree polynomials because changing one point on the line effects the other segments
+
+## Parametric Polynomial Curves
+### Parametric cubic curves
+x = x(u), y = y(u), z = z(u), where 0 <= u <= 1
+
+||||
+|---|---|---|
+|       |(x(u))|c_0^x + c_1^x*u + c_2^x*u² + c_3^x*u³|
+|p(u) = |(y(u))|c_0^y + c_1^y*u + c_2^y*u² + c_3^y*u³|
+|       |(z(u))|c_0^z + c_1^z*u + c_2^z*u² + c_3^z*u³|
+
+u is not evenly distributed along the curve, half of the length of the curve is not p(0.5)
+
+Types of cubic curves:
+- Interpolation
+- Hermite
+- Bézier
+- B-spline
+
+## Interpolating curves
+4 points: p0. p1, p2, p3
+
+We asign the points:
+- p0 = p(0)
+- p1 = p(1/3)
+- p2 = p(2/3)
+- p3 = p(1)
+
+(p0 p1 p2 p3) = C(u(0) u(1/3) u(2/3) u(1))
+
+P = CU
+
+We can compute C as PU^{-1}
+
+U only depends on the values of u and not the points. Therefore, we can pre compute it
+
+|||||
+|---|---|---|---|
+|1|-5.5|9|-4.5|
+|0|9|-22.5|13.5|
+|0|-4.5|18|-13.5|
+|0|1|-4.5|4.5|
+
+
+
+
+
+
+
+
+
+
+
+
