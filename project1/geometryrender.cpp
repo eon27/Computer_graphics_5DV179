@@ -37,6 +37,8 @@ void GeometryRender::initialize()
 
     // Get locations of the attributes in the shader
     locVertices = glGetAttribLocation( program, "vPosition");
+    locNormals = glGetAttribLocation(program, "vNormal");
+    
     locModel = glGetUniformLocation(program,"M");
     locView = glGetUniformLocation(program,"V");
     locProjection = glGetUniformLocation(program,"P");
@@ -47,7 +49,7 @@ void GeometryRender::initialize()
     cam = MyCamera(500, 60);
 }
 
-void GeometryRender::loadGeometry(vector<Vector3> vertexList, vector<int> indexList)
+void GeometryRender::loadGeometry(vector<Vector3> vertexList, vector<Vector3> normalList, vector<int> indexList)
 {
     vertices.clear();
     indices.clear();
@@ -60,6 +62,10 @@ void GeometryRender::loadGeometry(vector<Vector3> vertexList, vector<int> indexL
     for (long unsigned int i = 0; i < indexList.size(); i++) {
         indices.push_back(indexList[i]);
     }
+    
+    size_t vSize = vertices.size()*sizeof(float)*3;
+    size_t nSize = normalList.size()*sizeof(float)*3;
+    size_t iSize = indices.size()*sizeof(unsigned int);
 
     glUseProgram(program);
     glBindVertexArray(vao);
@@ -67,15 +73,21 @@ void GeometryRender::loadGeometry(vector<Vector3> vertexList, vector<int> indexL
     // Set the pointers of locVertices to the right places
     glVertexAttribPointer(locVertices, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
     glEnableVertexAttribArray(locVertices);
+
+    glVertexAttribPointer(locNormals, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(vSize));
+    glEnableVertexAttribArray(locNormals);
     
     glUniformMatrix4fv(locModel, 1, GL_TRUE, matModel.mat);
     glUniformMatrix4fv(locView, 1, GL_TRUE, cam.getViewMatrix().mat);
     glUniformMatrix4fv(locProjection, 1, GL_TRUE, cam.getProjectionMatrix().mat);
 
     // Load object data to the array buffer and index array
-    size_t vSize = vertices.size()*sizeof(float)*3;
-    size_t iSize = indices.size()*sizeof(unsigned int);
-    glBufferData( GL_ARRAY_BUFFER, vSize, vertices.data()->vec, GL_STATIC_DRAW );
+
+    glBufferData(GL_ARRAY_BUFFER, vSize + nSize, NULL, GL_STATIC_DRAW);
+
+    glBufferSubData(GL_ARRAY_BUFFER, 0, vSize, vertices.data()->vec);
+    glBufferSubData(GL_ARRAY_BUFFER, vSize, nSize, normalList.data()->vec);
+    
     glBufferData( GL_ELEMENT_ARRAY_BUFFER, iSize, indices.data(), GL_STATIC_DRAW );
 
     glBindVertexArray(0);
@@ -264,11 +276,17 @@ void GeometryRender::rotateCamera(float deltaX, float deltaY) {
 
 void GeometryRender::handleNewObject() {
     vector<Vector3> vertexList;
+    vector<Vector3> normalList;
     vector<int> indexList;
     
     for (int i = 0; i < objData.vertexCount; i++) {
         vertexList.push_back(Vector3(objData.vertexList[i][0].e));
     }
+
+    for (int i = 0; i < objData.normalCount; i++) {
+        vertexList.push_back(Vector3(objData.normalList[i][0].e));
+    }
+
     for (int i = 0; i < objData.faceCount; i++) {
         for (int j = 2; j < objData.faceList[i]->vertex_count; j++) {
             indexList.push_back(objData.faceList[i]->vertex_index[0]);
@@ -276,6 +294,6 @@ void GeometryRender::handleNewObject() {
             indexList.push_back(objData.faceList[i]->vertex_index[j]);
         }
     }
-    loadGeometry(vertexList, indexList);
+    loadGeometry(vertexList, normalList, indexList);
     objData.newData = false;
 }

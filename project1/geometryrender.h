@@ -37,6 +37,7 @@ private:
 
     // OpenGL attribute locations
     GLuint locVertices;
+    GLuint locNormals;
 
     // Geometry data
     std::vector<Vector3> vertices;
@@ -45,7 +46,7 @@ private:
     void debugShader(void) const;
 
     std::vector<Vector3> centerAndScaleObject(std::vector<Vector3> vertexList);
-    void loadGeometry(std::vector<Vector3> vertexList, std::vector<int> indexList);
+    void loadGeometry(std::vector<Vector3> vertexList, std::vector<Vector3> normalList, std::vector<int> indexList);
     void loadObjectGeometry();
 
     void updateView();
