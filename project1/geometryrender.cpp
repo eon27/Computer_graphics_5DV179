@@ -231,16 +231,16 @@ void GeometryRender::passAction(int action) {
     
     // Moving the camera in 3d
     case GLFW_KEY_W:
-        cam.move(0,0,-moveCamera);
-        break;
-    case GLFW_KEY_S:
         cam.move(0,0,moveCamera);
         break;
+    case GLFW_KEY_S:
+        cam.move(0,0,-moveCamera);
+        break;
     case GLFW_KEY_A:
-        cam.move(moveCamera,0,0);
+        cam.move(-moveCamera,0,0);
         break;
     case GLFW_KEY_D:
-        cam.move(-moveCamera,0,0);
+        cam.move(moveCamera,0,0);
         break;
     case GLFW_KEY_Q:
         cam.move(0,-moveCamera,0);

@@ -137,7 +137,7 @@ void MyCamera::rotate(float deltaX, float deltaY) {
 	Vector3 up3 = Vector3(upVec.vec[0], upVec.vec[1], upVec.vec[2]).normalize();
 	Vector3 right3 = look3.cross(up3).normalize();
 
-	rotationMatrix.rotateAroundAxis(right3, -deltaY);
+	rotationMatrix.rotateAroundAxis(right3, deltaY);
 	rotationMatrix.translate(-pos.vec[0], -pos.vec[1], -pos.vec[2]);
 
 	refPoint = rotationMatrix * refPoint;
