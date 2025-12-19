@@ -43,6 +43,8 @@ private:
     std::vector<Vector3> vertices;
     std::vector<unsigned int> indices;
 
+    float moveObject = 0.1;
+
     void debugShader(void) const;
 
     std::vector<Vector3> centerAndScaleObject(std::vector<Vector3> vertexList);

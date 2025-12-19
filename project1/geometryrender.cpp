@@ -137,6 +137,7 @@ vector<Vector3> GeometryRender::centerAndScaleObject(vector<Vector3> vertexList)
 	float scale = 1/longestLength;
     
 	matModel.scale(scale, scale, scale);
+    moveObject *= longestLength; // Scale the movement with the shrinkage of the object.
     //matModel.translate(-middleX * scale, -middleY * scale, -middleZ * scale);
 	for (long unsigned int i = 0; i < vertexList.size(); i++) {
 		vertexList[i].vec[0] -= middleX;
@@ -192,7 +193,6 @@ void GeometryRender::updateView() {
 
 void GeometryRender::passAction(int action) {
     const float moveCamera = 0.1;
-    const float moveObject = 0.1;
     glUseProgram(program);
     switch (action)
     {
@@ -204,17 +204,17 @@ void GeometryRender::passAction(int action) {
         matModel.rotatex(M_PI/18);
         break;
     case GLFW_KEY_LEFT:
-        matModel.rotatey(-M_PI/18);
+        matModel.rotatey(M_PI/18);
         break;
     case GLFW_KEY_RIGHT:
-        matModel.rotatey(M_PI/18);
+        matModel.rotatey(-M_PI/18);
         break;
     // Moving the object in 3d
     case GLFW_KEY_J:
-        matModel.translate(moveObject, 0, 0);
+        matModel.translate(-moveObject, 0, 0);
         break;
     case GLFW_KEY_L:
-        matModel.translate(-moveObject, 0, 0);
+        matModel.translate(moveObject, 0, 0);
         break;
     case GLFW_KEY_I:
         matModel.translate(0, moveObject, 0);
@@ -261,7 +261,6 @@ void GeometryRender::passAction(int action) {
     default:
         break;
     }
-    //cam.getViewMatrix().printMatrix();
     glUniformMatrix4fv(locView, 1, GL_TRUE, cam.getViewMatrix().mat);
     glUniformMatrix4fv(locModel, 1, GL_TRUE, matModel.mat);
     glUseProgram(0);
@@ -278,15 +277,11 @@ void GeometryRender::handleNewObject() {
     vector<Vector3> vertexList;
     vector<Vector3> normalList;
     vector<int> indexList;
-    
+
     for (int i = 0; i < objData.vertexCount; i++) {
         vertexList.push_back(Vector3(objData.vertexList[i][0].e));
     }
-
-    for (int i = 0; i < objData.normalCount; i++) {
-        vertexList.push_back(Vector3(objData.normalList[i][0].e));
-    }
-
+    
     for (int i = 0; i < objData.faceCount; i++) {
         for (int j = 2; j < objData.faceList[i]->vertex_count; j++) {
             indexList.push_back(objData.faceList[i]->vertex_index[0]);
@@ -294,6 +289,40 @@ void GeometryRender::handleNewObject() {
             indexList.push_back(objData.faceList[i]->vertex_index[j]);
         }
     }
+    
+    for (int i = 0; i < objData.vertexCount; i++) {
+        normalList.push_back(Vector3(0,0,0));
+    }
+    if (objData.normalCount) {
+        for (int i = 0; i < objData.faceCount; i++) {
+            // For face i, go trough all vertices in the face.
+            for (int j = 0; j < objData.faceList[i]->vertex_count; j++) {
+
+                int currentVertex = objData.faceList[i]->vertex_index[j];
+                int normalIndexOfVertex = objData.faceList[i]->normal_index[j];
+                
+                normalList[currentVertex] = normalList[currentVertex] + Vector3(objData.normalList[normalIndexOfVertex]->e).normalize();
+            }
+        }
+    } else {
+        // Calculate vertex normals. To account for quads, the indexList and vertexList must be used insted of the 
+        for (size_t i = 0; i < indexList.size(); i += 3) {
+            Vector3 vector1 = vertexList[indexList[i]] - vertexList[indexList[i+1]];
+            Vector3 vector2 = vertexList[indexList[i]] - vertexList[indexList[i+2]];
+            Vector3 normal = vector1.cross(vector2).normalize();
+
+            normalList[indexList[i]] = normalList[indexList[i]] + normal;
+            normalList[indexList[i+1]] = normalList[indexList[i+1]] + normal;
+            normalList[indexList[i+2]] = normalList[indexList[i+2]] + normal;
+        }
+    }
+
+    //Normalize the normal values
+    for (size_t i = 0; i < normalList.size(); i++){
+        normalList[i] = normalList[i].normalize();
+    }
+    
+    
     loadGeometry(vertexList, normalList, indexList);
     objData.newData = false;
 }
