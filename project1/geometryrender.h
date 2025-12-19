@@ -39,7 +39,7 @@ private:
     // OpenGL attribute locations
     GLuint locVertices;
     GLuint locNormals;
-    GLuint locTexture;
+    GLuint locTexturePos;
 
     GLuint locCameraPos;
 
@@ -59,6 +59,7 @@ private:
     std::vector<Vector2> texCoords;
 
     float moveObject = 0.1;
+    float pointMaxDistance;
 
     void debugShader(void) const;
 

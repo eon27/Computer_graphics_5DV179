@@ -2,6 +2,7 @@
 
 in vec3 Normal;
 in vec3 FragPos;
+in vec2 TexCoord;
 
 out vec4  fColor;
 
@@ -15,6 +16,8 @@ uniform vec3 materialAmbient;
 uniform vec3 materialDiffuse;
 uniform vec3 materialSpecular;
 uniform float materialShininess;
+
+uniform sampler2D textureMap;
 
 void
 main()
@@ -44,5 +47,7 @@ main()
 
     vec3 color = ambient + diffuse + specular;
 
+
     fColor = vec4(color, 1.0);
+    fColor = texture(textureMap, TexCoord);
 }

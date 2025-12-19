@@ -38,7 +38,7 @@ void GeometryRender::initialize()
     // Get locations of the attributes in the shader
     locVertices = glGetAttribLocation( program, "vPosition");
     locNormals = glGetAttribLocation(program, "vNormal");
-    locTexture = glGetAttribLocation(program, "vTexture");
+    locTexturePos = glGetAttribLocation(program, "vTexture");
     
     locModel = glGetUniformLocation(program,"M");
     locView = glGetUniformLocation(program,"V");
@@ -85,8 +85,8 @@ void GeometryRender::loadGeometry()
     glVertexAttribPointer(locNormals, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(vSize));
     glEnableVertexAttribArray(locNormals);
 
-    glVertexAttribPointer(locTexture, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(tSize));
-    glEnableVertexAttribArray(locTexture);
+    glVertexAttribPointer(locTexturePos, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(tSize));
+    glEnableVertexAttribArray(locTexturePos);
     
     glUniformMatrix4fv(locModel, 1, GL_TRUE, matModel.mat);
     glUniformMatrix4fv(locView, 1, GL_TRUE, cam.getViewMatrix().mat);
@@ -147,6 +147,9 @@ void GeometryRender::centerAndScaleObject() {
 	
 	float longestLength = max<float>(lengthX, max<float>(lengthY, lengthZ));
 	float scale = 1/longestLength;
+
+    // Maximum possible distance from a point on the object to the origin (used in texture coordinate calculation, to avoid looping over vertices twice)
+    pointMaxDistance = longestLength/2 * sqrt(2);
     
 	matModel.scale(scale, scale, scale);
     moveObject *= longestLength; // Scale the movement with the shrinkage of the object.
@@ -349,9 +352,43 @@ void GeometryRender::handleNewObject() {
     }
     
     centerAndScaleObject();
+    
+    // Calculate texture coordinates for vertices
+    for (size_t i = 0; i < vertexList.size(); i++) {
+        float b = 2 * (vertexList[i] * normalList[i]);
+        float c = (vertexList[i] * vertexList[i]) - pointMaxDistance * pointMaxDistance; // pointMaxDistance = maximum possible distance from vertex to origin 
+        float q = -0.5 * (b + (signbit(b) * 2 - 1) * sqrt(b*b - 4*c)); // Signbit = true/false (1/0), 1 * 2 - 1 = 1, 0 * 2 - 1 = -1
+
+        float d1 = q;
+        float d2 = c/q;
+
+        float dPlus = d1;
+        if (d2 > d1) dPlus = d2;
+
+        Vector3 intersect = vertexList[i] + normalList[i] * dPlus;
+        intersect = intersect.normalize();
+
+        float s = acos(intersect.vec[0]/pointMaxDistance) / M_1_PI;
+        float t = atan(intersect.vec[2]/intersect.vec[1]) / M_1_PI + 0.5;
+        texCoords.push_back(Vector2(s, t));
+    }
+    
+    
     loadGeometry();
 }
 
 void GeometryRender::handleNewTexture(unsigned char *data, int width, int height, int nrChannels) {
-
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    // set the texture wrapping/filtering options (on the currently bound texture object)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+// load and generate the texture
+    if (data) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
 }

@@ -430,4 +430,5 @@ void OpenGLWindow::openNewTexture(string filename) {
     int width, height, nrChannels;
     unsigned char *data = stbi_load(namePointer, &width, &height, &nrChannels, 0);
     handleNewTexture(data, width, height, nrChannels);
+    stbi_image_free(data);
 }
