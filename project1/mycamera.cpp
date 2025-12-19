@@ -142,3 +142,7 @@ void MyCamera::rotate(float deltaX, float deltaY) {
 
 	refPoint = rotationMatrix * refPoint;
 }
+
+Vector3 MyCamera::getPosition() {
+	return Vector3(pos.vec[0], pos.vec[1], pos.vec[2]);
+}

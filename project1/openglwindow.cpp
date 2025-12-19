@@ -275,14 +275,6 @@ OpenGLWindow::DrawGui()
 {
     IM_ASSERT(ImGui::GetCurrentContext() != NULL && "Missing dear imgui context.");
 
-    // lightPos[3] = {0.0f, 0.0f, 0.0f};
-    // lightColor[3] = {1.0f, 1.0f, 1.0f};
-    // ambientColor[3] = {0.2f, 0.2f, 0.2f};
-
-    // materialAmbient[3] = {.5f, .5f, .5f};
-    // materialDiffuse[3] = {.5f, .5f, .5f};
-    // materialSpecular[3] = {.5f, .5f, .5f};
-
     static ImGuiSliderFlags flags = ImGuiSliderFlags_AlwaysClamp;
     static ImGuiFileDialog fileDialog;    
     static ImGuiFileDialog textureDialog; // New dialog for textures

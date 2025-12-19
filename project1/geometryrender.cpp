@@ -43,6 +43,17 @@ void GeometryRender::initialize()
     locView = glGetUniformLocation(program,"V");
     locProjection = glGetUniformLocation(program,"P");
 
+    locCameraPos = glGetUniformLocation(program,"camPos");
+
+    locLightPos = glGetUniformLocation(program,"lightPos");
+    locLightColor = glGetUniformLocation(program,"lightColor");
+    locAmbientColor = glGetUniformLocation(program,"ambientColor");
+
+    locMaterialAmbient = glGetUniformLocation(program,"materialAmbient");
+    locMaterialDiffuse = glGetUniformLocation(program,"materialDiffuse");
+    locMaterialSpecular = glGetUniformLocation(program,"materialSpecular");
+    locMaterialShininess = glGetUniformLocation(program,"materialShininess");
+
     glBindVertexArray(0);
     glUseProgram(0);
 
@@ -184,11 +195,26 @@ void GeometryRender::display()
 
 }
 
+/**
+ * Takes the inputs from the GUI and utdates the values in the shader.
+ */
 void GeometryRender::updateView() {
-    // Must treat them as floats to so they don't get rounded
+
+    // Must treat them as floats to so result doesn't get rounded
     float aspectRatio = ((float) width()) / ((float) height());
     cam.updateView(fov, farplane, top, obliqueScale, obliqueAngleRad, proj_current_idx, aspectRatio);
     glUniformMatrix4fv(locProjection, 1, GL_TRUE, cam.getProjectionMatrix().mat);
+
+    glUniform3f(locCameraPos, cam.getPosition().vec[0], cam.getPosition().vec[1], cam.getPosition().vec[2]);
+
+    glUniform3f(locLightPos, lightPos[0], lightPos[1], lightPos[2]);
+    glUniform3f(locLightColor, lightColor[0], lightColor[1], lightColor[2]);
+    glUniform3f(locAmbientColor, ambientColor[0], ambientColor[1], ambientColor[2]);
+
+    glUniform3f(locMaterialAmbient, materialAmbient[0], materialAmbient[1], materialAmbient[2]);
+    glUniform3f(locMaterialDiffuse, materialDiffuse[0], materialDiffuse[1], materialDiffuse[2]);
+    glUniform3f(locMaterialSpecular, materialSpecular[0], materialSpecular[1], materialSpecular[2]);
+    glUniform1f(locMaterialShininess, materialShininess);
 }
 
 void GeometryRender::passAction(int action) {

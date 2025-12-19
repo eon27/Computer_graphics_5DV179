@@ -39,6 +39,17 @@ private:
     GLuint locVertices;
     GLuint locNormals;
 
+    GLuint locCameraPos;
+
+    GLuint locLightPos;
+    GLuint locLightColor;
+    GLuint locAmbientColor;
+
+    GLuint locMaterialAmbient;
+    GLuint locMaterialDiffuse;
+    GLuint locMaterialSpecular;
+    GLuint locMaterialShininess;
+
     // Geometry data
     std::vector<Vector3> vertices;
     std::vector<unsigned int> indices;
@@ -56,16 +67,4 @@ private:
     MyCamera cam;
 
     Matrix matModel = Matrix();
-    Matrix matView = Matrix(
-        1,0,0,0,
-        0,1,0,0,
-        0,0,1,-2,
-        0,0,0,1
-    );
-    Matrix matProjection = Matrix(
-        1.28,0,0,0,
-        0,2.75,0,0,
-        0,0,-1.67,-53.33,
-        0,0,-1,0
-    );
 };
