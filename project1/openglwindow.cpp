@@ -12,6 +12,9 @@
 #include "lib/ImGui/imgui_impl_opengl3.h"
 #include "lib/ImGuiFileDialog/ImGuiFileDialog.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "lib/stb_image/stb_image.h"
+
 using namespace std;
 
 // Initialize OpenGL context and viewport.
@@ -340,6 +343,7 @@ OpenGLWindow::DrawGui()
                 textureFileName = textureDialog.GetCurrentFileName();
                 textureFilePath = textureDialog.GetCurrentPath();
                 cout << "Texture file: " << textureFileName << endl << "Path: " << textureFilePath << endl;
+                openNewTexture(textureFilePath + '/' + textureFileName);
             } else {
                 // Return a message to the user if the file could not be opened
             }
@@ -418,4 +422,12 @@ void OpenGLWindow::openNewObject(string filename) {
     }
     printf("Loading geometry...\n");
     handleNewObject();
+}
+
+void OpenGLWindow::openNewTexture(string filename) {
+    char* namePointer;
+    namePointer = &filename[0];
+    int width, height, nrChannels;
+    unsigned char *data = stbi_load(namePointer, &width, &height, &nrChannels, 0);
+    handleNewTexture(data, width, height, nrChannels);
 }

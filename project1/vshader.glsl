@@ -2,6 +2,7 @@
 
 in vec3 vPosition;
 in vec3 vNormal;
+in vec2 vTexture;
 
 uniform mat4 M;
 uniform mat4 V;

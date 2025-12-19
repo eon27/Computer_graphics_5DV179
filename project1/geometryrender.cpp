@@ -38,6 +38,7 @@ void GeometryRender::initialize()
     // Get locations of the attributes in the shader
     locVertices = glGetAttribLocation( program, "vPosition");
     locNormals = glGetAttribLocation(program, "vNormal");
+    locTexture = glGetAttribLocation(program, "vTexture");
     
     locModel = glGetUniformLocation(program,"M");
     locView = glGetUniformLocation(program,"V");
@@ -58,25 +59,21 @@ void GeometryRender::initialize()
     glUseProgram(0);
 
     cam = MyCamera(500, 60);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
 }
 
-void GeometryRender::loadGeometry(vector<Vector3> vertexList, vector<Vector3> normalList, vector<int> indexList)
-{
-    vertices.clear();
-    indices.clear();
-    vector<Vector3> updatedVertices = centerAndScaleObject(vertexList);
-    
-    for (long unsigned int i = 0; i < updatedVertices.size(); i++) {
-        vertices.push_back(updatedVertices[i]);
-    }
-
-    for (long unsigned int i = 0; i < indexList.size(); i++) {
-        indices.push_back(indexList[i]);
-    }
-    
-    size_t vSize = vertices.size()*sizeof(float)*3;
+void GeometryRender::loadGeometry()
+{  
+    size_t vSize = vertexList.size()*sizeof(float)*3;
     size_t nSize = normalList.size()*sizeof(float)*3;
-    size_t iSize = indices.size()*sizeof(unsigned int);
+    size_t tSize = texCoords.size()*sizeof(float)*3;
+    size_t iSize = indexList.size()*sizeof(unsigned int);
+    
 
     glUseProgram(program);
     glBindVertexArray(vao);
@@ -87,6 +84,9 @@ void GeometryRender::loadGeometry(vector<Vector3> vertexList, vector<Vector3> no
 
     glVertexAttribPointer(locNormals, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(vSize));
     glEnableVertexAttribArray(locNormals);
+
+    glVertexAttribPointer(locTexture, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(tSize));
+    glEnableVertexAttribArray(locTexture);
     
     glUniformMatrix4fv(locModel, 1, GL_TRUE, matModel.mat);
     glUniformMatrix4fv(locView, 1, GL_TRUE, cam.getViewMatrix().mat);
@@ -94,19 +94,20 @@ void GeometryRender::loadGeometry(vector<Vector3> vertexList, vector<Vector3> no
 
     // Load object data to the array buffer and index array
 
-    glBufferData(GL_ARRAY_BUFFER, vSize + nSize, NULL, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vSize + nSize + tSize, NULL, GL_STATIC_DRAW);
 
-    glBufferSubData(GL_ARRAY_BUFFER, 0, vSize, vertices.data()->vec);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, vSize, vertexList.data()->vec);
     glBufferSubData(GL_ARRAY_BUFFER, vSize, nSize, normalList.data()->vec);
+    glBufferSubData(GL_ARRAY_BUFFER, vSize + nSize, tSize, texCoords.data()->vec);
     
-    glBufferData( GL_ELEMENT_ARRAY_BUFFER, iSize, indices.data(), GL_STATIC_DRAW );
+    glBufferData( GL_ELEMENT_ARRAY_BUFFER, iSize, indexList.data(), GL_STATIC_DRAW );
 
     glBindVertexArray(0);
     glUseProgram(0);
 }
 
-vector<Vector3> GeometryRender::centerAndScaleObject(vector<Vector3> vertexList) {
-	if (vertexList.empty()) return vertexList;
+void GeometryRender::centerAndScaleObject() {
+	if (vertexList.empty()) return;
 	// Reset the matrix	
 	matModel = Matrix();
 
@@ -155,8 +156,6 @@ vector<Vector3> GeometryRender::centerAndScaleObject(vector<Vector3> vertexList)
 		vertexList[i].vec[1] -= middleY;
 		vertexList[i].vec[2] -= middleZ;
 	}
-
-    return vertexList;
 }
 
 // Check if any error has been reported from the shader
@@ -185,7 +184,7 @@ void GeometryRender::display()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Call OpenGL to draw the triangle
-    glDrawElements(GL_TRIANGLES, static_cast<int>(indices.size()), GL_UNSIGNED_INT, BUFFER_OFFSET(0));
+    glDrawElements(GL_TRIANGLES, static_cast<int>(indexList.size()), GL_UNSIGNED_INT, BUFFER_OFFSET(0));
 
     // Not to be called in release...
     debugShader();
@@ -300,9 +299,10 @@ void GeometryRender::rotateCamera(float deltaX, float deltaY) {
 }
 
 void GeometryRender::handleNewObject() {
-    vector<Vector3> vertexList;
-    vector<Vector3> normalList;
-    vector<int> indexList;
+    vertexList.clear();
+    indexList.clear();
+    normalList.clear();
+    texCoords.clear();
 
     for (int i = 0; i < objData.vertexCount; i++) {
         vertexList.push_back(Vector3(objData.vertexList[i][0].e));
@@ -348,7 +348,10 @@ void GeometryRender::handleNewObject() {
         normalList[i] = normalList[i].normalize();
     }
     
-    
-    loadGeometry(vertexList, normalList, indexList);
-    objData.newData = false;
+    centerAndScaleObject();
+    loadGeometry();
+}
+
+void GeometryRender::handleNewTexture(unsigned char *data, int width, int height, int nrChannels) {
+
 }

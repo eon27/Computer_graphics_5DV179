@@ -23,6 +23,7 @@ public:
     virtual void passAction(int action) override;
     virtual void rotateCamera(float deltaX, float deltaY);
     virtual void handleNewObject() override;
+    virtual void handleNewTexture(unsigned char *data, int width, int height, int nrChannels) override;
 
 private:
     GLuint program;
@@ -38,6 +39,7 @@ private:
     // OpenGL attribute locations
     GLuint locVertices;
     GLuint locNormals;
+    GLuint locTexture;
 
     GLuint locCameraPos;
 
@@ -51,15 +53,17 @@ private:
     GLuint locMaterialShininess;
 
     // Geometry data
-    std::vector<Vector3> vertices;
-    std::vector<unsigned int> indices;
+    std::vector<Vector3> vertexList;
+    std::vector<Vector3> normalList;
+    std::vector<unsigned int> indexList;
+    std::vector<Vector2> texCoords;
 
     float moveObject = 0.1;
 
     void debugShader(void) const;
 
-    std::vector<Vector3> centerAndScaleObject(std::vector<Vector3> vertexList);
-    void loadGeometry(std::vector<Vector3> vertexList, std::vector<Vector3> normalList, std::vector<int> indexList);
+    void centerAndScaleObject();
+    void loadGeometry();
     void loadObjectGeometry();
 
     void updateView();

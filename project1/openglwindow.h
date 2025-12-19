@@ -39,6 +39,8 @@ public:
 
     void openNewObject(std::string filename);
     virtual void handleNewObject() = 0;
+    void openNewTexture(std::string filename);
+    virtual void handleNewTexture(unsigned char *data, int width, int height, int nrChannels) = 0;
 
     objLoader objData;
 
