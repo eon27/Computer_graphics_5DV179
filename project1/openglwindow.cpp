@@ -275,14 +275,6 @@ OpenGLWindow::DrawGui()
 {
     IM_ASSERT(ImGui::GetCurrentContext() != NULL && "Missing dear imgui context.");
 
-    textureShow = false;
-
-    fov = 60.0f;
-    farplane = 500.0f;
-    top = 1.0f;
-    obliqueScale = 0.0f;
-    obliqueAngleRad = M_PI/4.0f;
-
     // lightPos[3] = {0.0f, 0.0f, 0.0f};
     // lightColor[3] = {1.0f, 1.0f, 1.0f};
     // ambientColor[3] = {0.2f, 0.2f, 0.2f};
@@ -290,8 +282,6 @@ OpenGLWindow::DrawGui()
     // materialAmbient[3] = {.5f, .5f, .5f};
     // materialDiffuse[3] = {.5f, .5f, .5f};
     // materialSpecular[3] = {.5f, .5f, .5f};
-    materialShininess = 1.0f;
-    
 
     static ImGuiSliderFlags flags = ImGuiSliderFlags_AlwaysClamp;
     static ImGuiFileDialog fileDialog;    
