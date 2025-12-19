@@ -493,3 +493,13 @@ Vector4 Vector4::operator*(const float& rhs) {
     }
     return temp;
 }
+
+Vector2::Vector2() {
+    vec[0] = 0;
+    vec[1] = 0;
+}
+
+Vector2::Vector2(float u, float v) {
+    vec[0] = u;
+    vec[1] = v;
+}

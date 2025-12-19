@@ -1,6 +1,15 @@
 #ifndef LINEARALGEBRA
 #define LINEARALGEBRA
 
+class Vector2 {
+    public:
+        float vec[2];
+
+        Vector2();
+
+        Vector2(float u, float v);
+};
+
 // 3D vector that has implemented vector multiplication, scalar multiplication, addition and subtraction.
 // 
 class Vector3 {
