@@ -77,13 +77,11 @@ Matrix MyCamera::getViewMatrix() {
 Matrix MyCamera::getProjectionMatrix() {
 	if (parallellPerspective) {
 		Matrix temp = Matrix(
-			1/aspectRatio,0,obliqueScale*cos(obliqueAngleRad),0,
-			0,1,obliqueScale*sin(obliqueAngleRad),0,
-			0,0,1,0,
+			1/(top*aspectRatio),0,obliqueScale*cos(obliqueAngleRad),0,
+			0,1/top,obliqueScale*sin(obliqueAngleRad),0,
+			0,0,-1/(far-near),0,
 			0,0,0,1
 		);
-		temp.translate(0,0,(-2*far*near)/(far-near));
-		temp.scale(1/top,1/top,-(far+near)/(far-near));
 		return temp;
 
 	} else {

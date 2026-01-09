@@ -9,7 +9,7 @@ class MyCamera
 		Vector4 refPoint;
 		Vector4 upVec;
 
-		float near = 1;
+		float near = 0.1;
 		float far;
 		float fov;
 		float top;
