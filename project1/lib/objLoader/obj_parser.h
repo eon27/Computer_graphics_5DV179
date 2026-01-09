@@ -120,7 +120,7 @@ struct obj_scene_data
 	
 	obj_material **material_list;
 	
-	int vertex_count;
+	int vertex_count = 0;
 	int vertex_normal_count;
 	int vertex_texture_count;
 

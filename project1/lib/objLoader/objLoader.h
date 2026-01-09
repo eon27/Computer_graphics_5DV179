@@ -9,7 +9,9 @@ public:
 	objLoader() {}
 	~objLoader()
 	{
-		delete_obj_data(&data);
+		if (data.vertex_count != 0) {
+			delete_obj_data(&data);
+		}
 	}
 
 	int load(char *filename);
