@@ -8,10 +8,11 @@ uniform mat4 M;
 uniform mat4 V;
 uniform mat4 P;
 
-
 out vec3 Normal;
 out vec3 FragPos; 
 out vec2 TexCoord;
+
+//const vec3[4] planeCoord = vec3[3](vec3(-10, -1, -10), vec3(10, -1, -10), vec3(10, -1, 10), vec3(-10, -1, 10));
 
 void
 main()

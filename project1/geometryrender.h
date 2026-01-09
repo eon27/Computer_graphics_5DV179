@@ -26,12 +26,14 @@ public:
     virtual void handleNewTexture(unsigned char *data, int width, int height, int nrChannels) override;
 
 private:
-    GLuint program;
 
+    GLuint program;
+    
     // OpenGL buffers
-    GLuint vao;
-    GLuint vBuffer;
-    GLuint iBuffer;
+    #define OBJECTS 1
+    GLuint vao[OBJECTS];
+    GLuint vBuffer[OBJECTS];
+    GLuint iBuffer[OBJECTS];
     GLuint locModel;
     GLuint locView;
     GLuint locProjection;
@@ -51,6 +53,8 @@ private:
     GLuint locMaterialDiffuse;
     GLuint locMaterialSpecular;
     GLuint locMaterialShininess;
+
+    GLuint locUseTexture;
 
     // Geometry data
     std::vector<Vector3> vertexList;

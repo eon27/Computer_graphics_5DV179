@@ -69,6 +69,9 @@ protected:
     float materialDiffuse[3] = {.5f, .5f, .5f};
     float materialSpecular[3] = {.5f, .5f, .5f};
     float materialShininess = 16.0f;
+
+    bool textureShow = false;
+    bool skyShow = false;
 private:
     void DrawGui();
 
@@ -83,5 +86,4 @@ private:
     std::string objFilePath;
     std::string textureFileName;
     std::string textureFilePath;
-    bool textureShow = false;
 };

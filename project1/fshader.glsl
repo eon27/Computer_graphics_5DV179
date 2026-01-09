@@ -17,6 +17,7 @@ uniform vec3 materialDiffuse;
 uniform vec3 materialSpecular;
 uniform float materialShininess;
 
+uniform bool useTexture;
 uniform sampler2D textureMap;
 
 void
@@ -44,10 +45,20 @@ main()
     } else {
         specular = vec3(0,0,0);
     }
+    vec4 tex;
+    if (useTexture) {
+        tex = texture(textureMap, TexCoord);
+    } else {
+        tex = vec4(1,1,1,1);
+    }
 
-    vec3 color = ambient + diffuse + specular;
 
+    // diffuse = floor(diffuse * 8) / 8;
+    // specular = floor(specular * 2) / 2;
+    vec3 color = (ambient + diffuse + specular) * tex.xyz;
+    // color.x = floor(color.x * 8) / 8;
+    // color.y = floor(color.y * 8) / 8;
+    // color.z = floor(color.z * 8) / 8;
 
-    fColor = vec4(color, 1.0);
-    fColor = texture(textureMap, TexCoord);
+    fColor = vec4(color, tex.w);
 }

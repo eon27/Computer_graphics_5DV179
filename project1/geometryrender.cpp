@@ -22,18 +22,18 @@ void GeometryRender::initialize()
     glUseProgram(program);
 
     // Creat a vertex array object
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
+    glGenVertexArrays(OBJECTS, vao);
+    glBindVertexArray(vao[0]);
 
     // Create vertex buffer in the shared display list space and
     // bind it as VertexBuffer (GL_ARRAY_BUFFER)
-    glGenBuffers( 1, &vBuffer);
-    glBindBuffer( GL_ARRAY_BUFFER, vBuffer);
+    glGenBuffers(OBJECTS, vBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, vBuffer[0]);
 
     /* Create buffer in the shared display list space and 
        bind it as GL_ELEMENT_ARRAY_BUFFER */
-    glGenBuffers(1, &iBuffer);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iBuffer);
+    glGenBuffers(OBJECTS, iBuffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iBuffer[0]);
 
     // Get locations of the attributes in the shader
     locVertices = glGetAttribLocation( program, "vPosition");
@@ -55,6 +55,8 @@ void GeometryRender::initialize()
     locMaterialSpecular = glGetUniformLocation(program,"materialSpecular");
     locMaterialShininess = glGetUniformLocation(program,"materialShininess");
 
+    locUseTexture = glGetUniformLocation(program, "useTexture");
+
     glBindVertexArray(0);
     glUseProgram(0);
 
@@ -71,12 +73,12 @@ void GeometryRender::loadGeometry()
 {  
     size_t vSize = vertexList.size()*sizeof(float)*3;
     size_t nSize = normalList.size()*sizeof(float)*3;
-    size_t tSize = texCoords.size()*sizeof(float)*3;
+    size_t tSize = texCoords.size()*sizeof(float)*2;
     size_t iSize = indexList.size()*sizeof(unsigned int);
     
 
     glUseProgram(program);
-    glBindVertexArray(vao);
+    glBindVertexArray(vao[0]);
 
     // Set the pointers of locVertices to the right places
     glVertexAttribPointer(locVertices, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
@@ -85,7 +87,7 @@ void GeometryRender::loadGeometry()
     glVertexAttribPointer(locNormals, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(vSize));
     glEnableVertexAttribArray(locNormals);
 
-    glVertexAttribPointer(locTexturePos, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(tSize));
+    glVertexAttribPointer(locTexturePos, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(vSize + nSize));
     glEnableVertexAttribArray(locTexturePos);
     
     glUniformMatrix4fv(locModel, 1, GL_TRUE, matModel.mat);
@@ -180,7 +182,7 @@ void GeometryRender::display()
 {
     
     glUseProgram(program);
-    glBindVertexArray(vao);
+    glBindVertexArray(vao[0]);
     
     updateView();
 
@@ -194,7 +196,6 @@ void GeometryRender::display()
 
     glBindVertexArray(0);
     glUseProgram(0);
-
 }
 
 /**
@@ -217,6 +218,8 @@ void GeometryRender::updateView() {
     glUniform3f(locMaterialDiffuse, materialDiffuse[0], materialDiffuse[1], materialDiffuse[2]);
     glUniform3f(locMaterialSpecular, materialSpecular[0], materialSpecular[1], materialSpecular[2]);
     glUniform1f(locMaterialShininess, materialShininess);
+
+    glUniform1i(locUseTexture, textureShow);
 }
 
 void GeometryRender::passAction(int action) {
@@ -373,7 +376,7 @@ void GeometryRender::handleNewObject() {
         texCoords.push_back(Vector2(s, t));
     }
     
-    
+
     loadGeometry();
 }
 
