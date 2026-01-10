@@ -33,8 +33,9 @@ public:
     void start();
     virtual void initialize() = 0;
     virtual void display() = 0;
-    virtual void passAction(int action) = 0;
+    virtual void controlls(int action) = 0;
     virtual void rotateCamera(float deltaX, float deltaY) = 0;
+    virtual void moveCamera(int action, float deltaTime) = 0;
     void displayNow();
 
     void openNewObject(std::string filename);

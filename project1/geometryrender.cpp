@@ -8,6 +8,8 @@
 #include "geometryrender.h"
 #include "mycamera.hpp"
 
+#define CAMERA_MOVE_SPEED 0.001
+
 using namespace std;
 
 // Initialize OpenGL
@@ -222,8 +224,7 @@ void GeometryRender::updateView() {
     glUniform1i(locUseTexture, textureShow);
 }
 
-void GeometryRender::passAction(int action) {
-    const float moveCamera = 0.1;
+void GeometryRender::controlls(int action) {
     glUseProgram(program);
     switch (action)
     {
@@ -259,27 +260,6 @@ void GeometryRender::passAction(int action) {
     case GLFW_KEY_M:
         matModel.translate(0, 0, -moveObject);
         break;
-    
-    // Moving the camera in 3d
-    case GLFW_KEY_W:
-        cam.move(0,0,moveCamera);
-        break;
-    case GLFW_KEY_S:
-        cam.move(0,0,-moveCamera);
-        break;
-    case GLFW_KEY_A:
-        cam.move(-moveCamera,0,0);
-        break;
-    case GLFW_KEY_D:
-        cam.move(moveCamera,0,0);
-        break;
-    case GLFW_KEY_Q:
-        cam.move(0,-moveCamera,0);
-        break;
-    case GLFW_KEY_E:
-        cam.move(0,moveCamera,0);
-        break;
-    
     case GLFW_KEY_P:
         printf("Material:\n");
         matModel.printMatrix();
@@ -292,14 +272,40 @@ void GeometryRender::passAction(int action) {
     default:
         break;
     }
-    glUniformMatrix4fv(locView, 1, GL_TRUE, cam.getViewMatrix().mat);
     glUniformMatrix4fv(locModel, 1, GL_TRUE, matModel.mat);
-    glUseProgram(0);
 }
 
 void GeometryRender::rotateCamera(float deltaX, float deltaY) {
     glUseProgram(program);
     cam.rotate(deltaX/180, deltaY/180);
+    glUniformMatrix4fv(locView, 1, GL_TRUE, cam.getViewMatrix().mat);
+    glUseProgram(0);
+}
+
+void GeometryRender::moveCamera(int action, float deltaTIme) {
+    glUseProgram(program);
+    switch (action)
+    {
+    // Moving the camera in 3d
+    case GLFW_KEY_W:
+        cam.move(0,0,CAMERA_MOVE_SPEED*deltaTIme);
+        break;
+    case GLFW_KEY_S:
+        cam.move(0,0,-CAMERA_MOVE_SPEED*deltaTIme);
+        break;
+    case GLFW_KEY_A:
+        cam.move(-CAMERA_MOVE_SPEED*deltaTIme,0,0);
+        break;
+    case GLFW_KEY_D:
+        cam.move(CAMERA_MOVE_SPEED*deltaTIme,0,0);
+        break;
+    case GLFW_KEY_Q:
+        cam.move(0,-CAMERA_MOVE_SPEED*deltaTIme,0);
+        break;
+    case GLFW_KEY_E:
+        cam.move(0,CAMERA_MOVE_SPEED*deltaTIme,0);
+        break;
+    }
     glUniformMatrix4fv(locView, 1, GL_TRUE, cam.getViewMatrix().mat);
     glUseProgram(0);
 }

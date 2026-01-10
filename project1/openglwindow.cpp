@@ -240,8 +240,8 @@ void
 OpenGLWindow::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GLFW_TRUE);
-    else if (action != GLFW_RELEASE) {
-        passAction(key);
+    else if (action != GLFW_RELEASE && key != GLFW_KEY_W && key != GLFW_KEY_A && key != GLFW_KEY_S && key != GLFW_KEY_D) {
+        controlls(key);
     }
 }
 
@@ -354,7 +354,6 @@ OpenGLWindow::DrawGui()
       
     if (ImGui::CollapsingHeader("Projection")) {
         const char* items[] = {"Perspective", "Parallel" };
-        static int proj_current_idx = 0;
         if (ImGui::Combo("projektion", &proj_current_idx, items, IM_ARRAYSIZE(items), IM_ARRAYSIZE(items)));
         if (proj_current_idx == 0) {
             ImGui::SliderFloat("Field of view",&fov, 20.0f, 160.0f, "%1.0f", flags);
@@ -368,6 +367,10 @@ OpenGLWindow::DrawGui()
         }
     }
 
+    if (ImGui::CollapsingHeader("Environment")) {
+        ImGui::Checkbox("Show Skybox", &skyShow);
+    }
+
     ImGui::End();
 }
 
@@ -375,8 +378,19 @@ OpenGLWindow::DrawGui()
 void 
 OpenGLWindow::start()
 {
+    std::time_t previousTime = std::time(nullptr);
     // Loop until the user closes the window
     while (!glfwWindowShouldClose(glfwWindow)) {
+
+        std::time_t newTime = std::time(nullptr);
+        float deltaTime = newTime - previousTime;
+        newTime = previousTime;
+        if (glfwGetKey(glfwWindow, GLFW_KEY_W) == GLFW_PRESS) moveCamera(GLFW_KEY_W, deltaTime);
+        if (glfwGetKey(glfwWindow, GLFW_KEY_A) == GLFW_PRESS) moveCamera(GLFW_KEY_A, deltaTime);
+        if (glfwGetKey(glfwWindow, GLFW_KEY_S) == GLFW_PRESS) moveCamera(GLFW_KEY_S, deltaTime);
+        if (glfwGetKey(glfwWindow, GLFW_KEY_D) == GLFW_PRESS) moveCamera(GLFW_KEY_D, deltaTime);
+        if (glfwGetKey(glfwWindow, GLFW_KEY_E) == GLFW_PRESS) moveCamera(GLFW_KEY_E, deltaTime);
+        if (glfwGetKey(glfwWindow, GLFW_KEY_Q) == GLFW_PRESS) moveCamera(GLFW_KEY_Q, deltaTime);
 
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
@@ -399,7 +413,7 @@ OpenGLWindow::start()
         glfwSwapBuffers(glfwWindow);
 
         // Sleep and wait for an event
-        glfwWaitEvents();
+        glfwPollEvents();
     }
     
 }

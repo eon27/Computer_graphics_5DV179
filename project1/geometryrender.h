@@ -20,15 +20,16 @@ public:
 
     void initialize();
     virtual void display() override;
-    virtual void passAction(int action) override;
-    virtual void rotateCamera(float deltaX, float deltaY);
+    virtual void controlls(int action) override;
+    virtual void rotateCamera(float deltaX, float deltaY) override;
+    virtual void moveCamera(int action, float deltaTime) override;
     virtual void handleNewObject() override;
     virtual void handleNewTexture(unsigned char *data, int width, int height, int nrChannels) override;
 
 private:
 
     GLuint program;
-    
+
     // OpenGL buffers
     #define OBJECTS 1
     GLuint vao[OBJECTS];
