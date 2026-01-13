@@ -37,6 +37,7 @@ public:
     virtual void rotateCamera(float deltaX, float deltaY) = 0;
     virtual void moveCamera(int action, float deltaTime) = 0;
     void displayNow();
+    void pollInput();
 
     void openNewObject(std::string filename);
     virtual void handleNewObject() = 0;
@@ -72,7 +73,6 @@ protected:
     float materialShininess = 16.0f;
 
     bool textureShow = false;
-    bool skyShow = false;
 private:
     void DrawGui();
 
@@ -82,6 +82,8 @@ private:
 
     double mousePosX;
     double mousePosY;
+
+    std::chrono::_V2::system_clock::time_point time = std::chrono::high_resolution_clock::now();
 
     std::string objFileName;
     std::string objFilePath;

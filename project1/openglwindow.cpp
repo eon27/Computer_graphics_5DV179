@@ -240,7 +240,8 @@ void
 OpenGLWindow::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GLFW_TRUE);
-    else if (action != GLFW_RELEASE && key != GLFW_KEY_W && key != GLFW_KEY_A && key != GLFW_KEY_S && key != GLFW_KEY_D) {
+
+    else if (action != GLFW_RELEASE) { // Capture GLFW_PRESS and GLFW_RELEASE
         controlls(key);
     }
 }
@@ -251,7 +252,7 @@ OpenGLWindow::mouseCallback(GLFWwindow* window, double xpos, double ypos) {
     ImGuiIO& io = ImGui::GetIO();
     io.AddMousePosEvent(xpos, ypos);
     if (glfwGetInputMode(window, GLFW_CURSOR) == GLFW_CURSOR_DISABLED) {
-        // Flipping delta Y because positiv Y is downwards.
+        // Flipping delta Y because positiv Y is downwards on screen.
         rotateCamera(mousePosX-xpos, ypos-mousePosY);
         mousePosX = xpos;
         mousePosY = ypos;
@@ -367,10 +368,6 @@ OpenGLWindow::DrawGui()
         }
     }
 
-    if (ImGui::CollapsingHeader("Environment")) {
-        ImGui::Checkbox("Show Skybox", &skyShow);
-    }
-
     ImGui::End();
 }
 
@@ -378,27 +375,16 @@ OpenGLWindow::DrawGui()
 void 
 OpenGLWindow::start()
 {
-    std::time_t previousTime = std::time(nullptr);
     // Loop until the user closes the window
     while (!glfwWindowShouldClose(glfwWindow)) {
 
-        std::time_t newTime = std::time(nullptr);
-        float deltaTime = newTime - previousTime;
-        newTime = previousTime;
-        if (glfwGetKey(glfwWindow, GLFW_KEY_W) == GLFW_PRESS) moveCamera(GLFW_KEY_W, deltaTime);
-        if (glfwGetKey(glfwWindow, GLFW_KEY_A) == GLFW_PRESS) moveCamera(GLFW_KEY_A, deltaTime);
-        if (glfwGetKey(glfwWindow, GLFW_KEY_S) == GLFW_PRESS) moveCamera(GLFW_KEY_S, deltaTime);
-        if (glfwGetKey(glfwWindow, GLFW_KEY_D) == GLFW_PRESS) moveCamera(GLFW_KEY_D, deltaTime);
-        if (glfwGetKey(glfwWindow, GLFW_KEY_E) == GLFW_PRESS) moveCamera(GLFW_KEY_E, deltaTime);
-        if (glfwGetKey(glfwWindow, GLFW_KEY_Q) == GLFW_PRESS) moveCamera(GLFW_KEY_Q, deltaTime);
+        // Poll movement input
+        pollInput();
 
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-
-        // ImGui example gui
-        //ImGui::ShowDemoWindow(&show_demo_window);
 
         // Draw the gui
         DrawGui();
@@ -418,6 +404,19 @@ OpenGLWindow::start()
     
 }
 
+void OpenGLWindow::pollInput() {
+    auto timeNow = std::chrono::high_resolution_clock::now();
+    float deltaTime = std::chrono::duration<float>(timeNow - time).count();
+    time = timeNow;
+
+    if (glfwGetKey(glfwWindow, GLFW_KEY_W) == GLFW_PRESS) moveCamera(GLFW_KEY_W, deltaTime);
+    if (glfwGetKey(glfwWindow, GLFW_KEY_A) == GLFW_PRESS) moveCamera(GLFW_KEY_A, deltaTime);
+    if (glfwGetKey(glfwWindow, GLFW_KEY_S) == GLFW_PRESS) moveCamera(GLFW_KEY_S, deltaTime);
+    if (glfwGetKey(glfwWindow, GLFW_KEY_D) == GLFW_PRESS) moveCamera(GLFW_KEY_D, deltaTime);
+    if (glfwGetKey(glfwWindow, GLFW_KEY_E) == GLFW_PRESS) moveCamera(GLFW_KEY_E, deltaTime);
+    if (glfwGetKey(glfwWindow, GLFW_KEY_Q) == GLFW_PRESS) moveCamera(GLFW_KEY_Q, deltaTime);
+}
+
 // Render the scene 
 void OpenGLWindow::displayNow()
 {
@@ -428,21 +427,25 @@ void OpenGLWindow::displayNow()
 }
 
 void OpenGLWindow::openNewObject(string filename) {
+    // Make a pointer to the string because objLoader wants a char*
     char* namePointer;
     namePointer = &filename[0];
+
     int status = objData.load(namePointer); // Returns 0 on error.
     if (status == 0) {
         return;
     }
-    printf("Loading geometry...\n");
     handleNewObject();
 }
 
 void OpenGLWindow::openNewTexture(string filename) {
+    // Make a pointer to the string because stb_image wants a char*
     char* namePointer;
     namePointer = &filename[0];
+    
     int width, height, nrChannels;
     unsigned char *data = stbi_load(namePointer, &width, &height, &nrChannels, 0);
+    
     handleNewTexture(data, width, height, nrChannels);
     stbi_image_free(data);
 }
