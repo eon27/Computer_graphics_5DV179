@@ -1,6 +1,6 @@
 #ifndef MY_CAMERA
 #define MY_CAMERA
-#include "LinearAlgebra.hpp"
+#include "lib/linearAlgebra/LinearAlgebra.hpp"
 
 class MyCamera
 {

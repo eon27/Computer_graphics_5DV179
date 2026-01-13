@@ -8,7 +8,7 @@
 #include "geometryrender.h"
 #include "mycamera.hpp"
 
-#define CAMERA_MOVE_SPEED 0.001
+#define CAMERA_MOVE_SPEED 1
 
 using namespace std;
 
@@ -19,7 +19,7 @@ void GeometryRender::initialize()
     glEnable(GL_DEPTH_TEST);
 
     // Create and initialize a program object with shaders
-    program = initProgram("vshader.glsl", "fshader.glsl");
+    program = initProgram("shader/vshader.glsl", "shader/fshader.glsl");
     // Installs the program object as part of current rendering state
     glUseProgram(program);
 
@@ -63,6 +63,8 @@ void GeometryRender::initialize()
     glUseProgram(0);
 
     cam = MyCamera(500, 60);
+
+    // Set texture handling constants
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
     
@@ -73,6 +75,7 @@ void GeometryRender::initialize()
 
 void GeometryRender::loadGeometry()
 {  
+    // Get the number of bytes for each buffer
     size_t vSize = vertexList.size()*sizeof(float)*3;
     size_t nSize = normalList.size()*sizeof(float)*3;
     size_t tSize = texCoords.size()*sizeof(float)*2;
@@ -92,12 +95,12 @@ void GeometryRender::loadGeometry()
     glVertexAttribPointer(locTexturePos, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(vSize + nSize));
     glEnableVertexAttribArray(locTexturePos);
     
+    // Send the matrix uniforms
     glUniformMatrix4fv(locModel, 1, GL_TRUE, matModel.mat);
     glUniformMatrix4fv(locView, 1, GL_TRUE, cam.getViewMatrix().mat);
     glUniformMatrix4fv(locProjection, 1, GL_TRUE, cam.getProjectionMatrix().mat);
 
     // Load object data to the array buffer and index array
-
     glBufferData(GL_ARRAY_BUFFER, vSize + nSize + tSize, NULL, GL_STATIC_DRAW);
 
     glBufferSubData(GL_ARRAY_BUFFER, 0, vSize, vertexList.data()->vec);
@@ -123,7 +126,7 @@ void GeometryRender::centerAndScaleObject() {
 	float highestY = vertexList[0].vec[1];
 	float highestZ = vertexList[0].vec[2];
 
-	// Find the lowest and highest x,y,z values.
+	// Find edge points in the x,y,z directions
 	for (long unsigned int i = 0; i < vertexList.size(); i++) {
 		lowestX = min<float>(lowestX, vertexList[i].vec[0]);
 		lowestY = min<float>(lowestY, vertexList[i].vec[1]);
@@ -134,11 +137,12 @@ void GeometryRender::centerAndScaleObject() {
 		highestZ = max<float>(highestZ, vertexList[i].vec[2]);
 	}
 
+    // Middle is between the edges
 	float middleX = (lowestX + highestX) / 2;
 	float middleY = (lowestY + highestY) / 2;
 	float middleZ = (lowestZ + highestZ) / 2;
 	
-	
+	// Length of object in x,y,z directions
 	float lengthX = highestX - lowestX;
 	float lengthY = highestY - lowestY;
 	float lengthZ = highestZ - lowestZ;
@@ -148,17 +152,18 @@ void GeometryRender::centerAndScaleObject() {
 	if (!lengthY) lengthY = 1;
 	if (!lengthZ) lengthZ = 1;
 	
-	
+	// Find the max length of the object and scale it down to length 1
 	float longestLength = max<float>(lengthX, max<float>(lengthY, lengthZ));
-	float scale = 1/longestLength;
+	float shrink = 1/longestLength;
 
     // Maximum possible distance from a point on the object to the origin (used in texture coordinate calculation, to avoid looping over vertices twice)
     pointMaxDistance = longestLength/2 * sqrt(2);
     
-	matModel.scale(scale, scale, scale);
+	matModel.scale(shrink, shrink, shrink);
     moveObject *= longestLength; // Scale the movement with the shrinkage of the object.
-    //matModel.translate(-middleX * scale, -middleY * scale, -middleZ * scale);
-	for (long unsigned int i = 0; i < vertexList.size(); i++) {
+    
+    // Move all points such that the middle of the object is at origin (0,0,0)
+    for (long unsigned int i = 0; i < vertexList.size(); i++) {
 		vertexList[i].vec[0] -= middleX;
 		vertexList[i].vec[1] -= middleY;
 		vertexList[i].vec[2] -= middleZ;
@@ -259,15 +264,6 @@ void GeometryRender::controlls(int action) {
         break;
     case GLFW_KEY_M:
         matModel.translate(0, 0, -moveObject);
-        break;
-    case GLFW_KEY_P:
-        printf("Material:\n");
-        matModel.printMatrix();
-        printf("View:\n");
-        cam.getViewMatrix().printMatrix();
-        printf("Projection:\n");
-        cam.getProjectionMatrix().printMatrix();
-        printf("\n\n");
         break;
     default:
         break;

@@ -10,7 +10,6 @@
 #include <memory>
 #include <cmath>
 #include <vector>
-#include "LinearAlgebra.hpp"
 
 // Macro for index to buffer pointer conversion
 #define BUFFER_OFFSET(i) (reinterpret_cast<char*>(0 + (i)))
