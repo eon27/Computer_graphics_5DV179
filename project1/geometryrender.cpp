@@ -73,6 +73,9 @@ void GeometryRender::initialize()
 
 }
 
+/**
+ * Send the shader inputs with buffers for the vertices, normals, texture coordinates and face indices
+ */
 void GeometryRender::loadGeometry()
 {  
     // Get the number of bytes for each buffer
@@ -113,6 +116,9 @@ void GeometryRender::loadGeometry()
     glUseProgram(0);
 }
 
+/**
+ * Fit object inside NDC cube
+ */
 void GeometryRender::centerAndScaleObject() {
 	if (vertexList.empty()) return;
 	// Reset the matrix	
@@ -212,6 +218,7 @@ void GeometryRender::updateView() {
 
     // Must treat them as floats to so result doesn't get rounded
     float aspectRatio = ((float) width()) / ((float) height());
+
     cam.updateView(fov, farplane, top, obliqueScale, obliqueAngleRad, proj_current_idx, aspectRatio);
     glUniformMatrix4fv(locProjection, 1, GL_TRUE, cam.getProjectionMatrix().mat);
 
@@ -229,6 +236,9 @@ void GeometryRender::updateView() {
     glUniform1i(locUseTexture, textureShow);
 }
 
+/**
+ * Take an input and transform the object accordingly
+ */
 void GeometryRender::controlls(int action) {
     glUseProgram(program);
     switch (action)
@@ -271,6 +281,9 @@ void GeometryRender::controlls(int action) {
     glUniformMatrix4fv(locModel, 1, GL_TRUE, matModel.mat);
 }
 
+/**
+ * Rotate the camera and update the shader parameter
+ */
 void GeometryRender::rotateCamera(float deltaX, float deltaY) {
     glUseProgram(program);
     cam.rotate(deltaX/180, deltaY/180);
@@ -278,6 +291,9 @@ void GeometryRender::rotateCamera(float deltaX, float deltaY) {
     glUseProgram(0);
 }
 
+/**
+ * Move the camera and update the shader parameter
+ */
 void GeometryRender::moveCamera(int action, float deltaTIme) {
     glUseProgram(program);
     switch (action)
@@ -306,16 +322,19 @@ void GeometryRender::moveCamera(int action, float deltaTIme) {
     glUseProgram(0);
 }
 
+
 void GeometryRender::handleNewObject() {
     vertexList.clear();
     indexList.clear();
     normalList.clear();
     texCoords.clear();
 
+    // Load vertices
     for (int i = 0; i < objData.vertexCount; i++) {
         vertexList.push_back(Vector3(objData.vertexList[i][0].e));
     }
     
+    // Load indices
     for (int i = 0; i < objData.faceCount; i++) {
         for (int j = 2; j < objData.faceList[i]->vertex_count; j++) {
             indexList.push_back(objData.faceList[i]->vertex_index[0]);
@@ -324,27 +343,36 @@ void GeometryRender::handleNewObject() {
         }
     }
     
+    // Add empty normals for each vertex
     for (int i = 0; i < objData.vertexCount; i++) {
         normalList.push_back(Vector3(0,0,0));
     }
+
+    // Check if the obj file had face normals
     if (objData.normalCount) {
         for (int i = 0; i < objData.faceCount; i++) {
             // For face i, go trough all vertices in the face.
             for (int j = 0; j < objData.faceList[i]->vertex_count; j++) {
 
+                // Get the index of vertex j in face i
                 int currentVertex = objData.faceList[i]->vertex_index[j];
+                // Find which of the normals face i uses
                 int normalIndexOfVertex = objData.faceList[i]->normal_index[j];
                 
+                // Add the face normal to the vertex normal
                 normalList[currentVertex] = normalList[currentVertex] + Vector3(objData.normalList[normalIndexOfVertex]->e).normalize();
             }
         }
     } else {
         // Calculate vertex normals. To account for quads, the indexList and vertexList must be used insted of the 
         for (size_t i = 0; i < indexList.size(); i += 3) {
+            // Construct two vector in the face
             Vector3 vector1 = vertexList[indexList[i]] - vertexList[indexList[i+1]];
             Vector3 vector2 = vertexList[indexList[i]] - vertexList[indexList[i+2]];
+
             Vector3 normal = vector1.cross(vector2).normalize();
 
+            // Add the normal to all the vertices of the face
             normalList[indexList[i]] = normalList[indexList[i]] + normal;
             normalList[indexList[i+1]] = normalList[indexList[i+1]] + normal;
             normalList[indexList[i+2]] = normalList[indexList[i+2]] + normal;
@@ -356,9 +384,10 @@ void GeometryRender::handleNewObject() {
         normalList[i] = normalList[i].normalize();
     }
     
+    // Make object fit inside NDC cube
     centerAndScaleObject();
     
-    // Calculate texture coordinates for vertices
+    // Calculate texture coordinates for vertices, by using two part mapping with sphere
     for (size_t i = 0; i < vertexList.size(); i++) {
         float b = 2 * (vertexList[i] * normalList[i]);
         float c = (vertexList[i] * vertexList[i]) - pointMaxDistance * pointMaxDistance; // pointMaxDistance = maximum possible distance from vertex to origin 
@@ -378,7 +407,7 @@ void GeometryRender::handleNewObject() {
         texCoords.push_back(Vector2(s, t));
     }
     
-
+    // Send data to buffers
     loadGeometry();
 }
 

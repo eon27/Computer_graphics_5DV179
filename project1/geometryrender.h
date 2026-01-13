@@ -9,8 +9,6 @@
 #include "openglwindow.h"
 #include "mycamera.hpp"
 
-typedef float Mat4x4[16];
-
 class GeometryRender : public OpenGLWindow
 {
 public:
