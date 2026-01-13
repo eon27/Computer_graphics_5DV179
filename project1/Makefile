@@ -16,7 +16,8 @@ CPPS =  $(SRC)/main.cpp \
 	$(wildcard $(SRC)/*.cpp) \
 	$(wildcard $(LIBDIR)/objLoader/*.cpp) \
 	$(wildcard $(LIBDIR)/ImGui/*.cpp) \
-	$(wildcard $(LIBDIR)/ImGuiFileDialog/*.cpp)
+	$(wildcard $(LIBDIR)/ImGuiFileDialog/*.cpp) \
+	$(wildcard $(LIBDIR)/linearAlgebra/*.cpp)
 # All .o files are put in the build directory
 OBJS = $(CPPS:%.cpp=$(BUILD_DIR)/%.o)
 # gcc/clang put the dependencies in the .d files
@@ -29,7 +30,7 @@ DBFLAGS = -O0 -g3 -ggdb3 -fno-inline
 WFLAGS  = -Wall -std=c++11 -Wformat -Wno-unknown-pragmas
 
 # Uncomment if you have local libraries or headers in subfolders lib and include
-IFLAGS = -I$(LIBDIR)/ImGui -I$(LIBDIR)/ImGuiFileDialog
+IFLAGS = -I$(LIBDIR)/ImGui -I$(LIBDIR)/ImGuiFileDialog -I$(LIBDIR)/linearAlgebra
 LFLAGS = #-Llib
 
 IMGUIFLAGS = -DIMGUI_IMPL_OPENGL_LOADER_GLEW
