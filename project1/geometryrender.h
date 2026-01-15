@@ -61,7 +61,7 @@ private:
     std::vector<unsigned int> indexList;
     std::vector<Vector2> texCoords;
 
-    float moveObject = 0.1;
+    float moveObject;
     float pointMaxDistance;
 
     void debugShader(void) const;

@@ -9,6 +9,7 @@
 #include "mycamera.hpp"
 
 #define CAMERA_MOVE_SPEED 1
+#define OBJECT_MOVE_SPEED 0.1
 
 using namespace std;
 
@@ -63,14 +64,6 @@ void GeometryRender::initialize()
     glUseProgram(0);
 
     cam = MyCamera(500, 60);
-
-    // Set texture handling constants
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
 }
 
 /**
@@ -166,7 +159,7 @@ void GeometryRender::centerAndScaleObject() {
     pointMaxDistance = longestLength/2 * sqrt(2);
     
 	matModel.scale(shrink, shrink, shrink);
-    moveObject *= longestLength; // Scale the movement with the shrinkage of the object.
+    moveObject = longestLength * OBJECT_MOVE_SPEED; // Scale the movement with the shrinkage of the object.
     
     // Move all points such that the middle of the object is at origin (0,0,0)
     for (long unsigned int i = 0; i < vertexList.size(); i++) {
@@ -399,13 +392,14 @@ void GeometryRender::handleNewObject() {
         float dPlus = d1;
         if (d2 > d1) dPlus = d2;
 
-        Vector3 intersect = vertexList[i] + normalList[i] * dPlus;
+        Vector3 intersect = vertexList[i] + vertexList[i].normalize() * dPlus;
         intersect = intersect.normalize();
 
         float s = acos(intersect.vec[0]/pointMaxDistance) / M_1_PI;
         float t = atan(intersect.vec[2]/intersect.vec[1]) / M_1_PI + 0.5;
         texCoords.push_back(Vector2(s, t));
     }
+
     
     // Send data to buffers
     loadGeometry();
