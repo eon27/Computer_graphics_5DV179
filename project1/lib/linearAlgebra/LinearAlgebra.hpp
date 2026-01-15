@@ -8,6 +8,8 @@ class Vector2 {
         Vector2();
 
         Vector2(float u, float v);
+
+        Vector2 normalize();
 };
 
 // 3D vector that has implemented vector multiplication, scalar multiplication, addition and subtraction.

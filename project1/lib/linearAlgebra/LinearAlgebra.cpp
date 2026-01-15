@@ -503,3 +503,13 @@ Vector2::Vector2(float u, float v) {
     vec[0] = u;
     vec[1] = v;
 }
+
+Vector2 Vector2::normalize() {
+    Vector2 temp = Vector2(vec[0], vec[1]);
+    float length = sqrt((temp.vec[0] * temp.vec[0]) + (temp.vec[1] * temp.vec[1]));
+    if (length) {
+        temp.vec[0] = temp.vec[0] / length;
+        temp.vec[1] = temp.vec[1] / length;
+    }
+    return temp;
+}
