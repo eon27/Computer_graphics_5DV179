@@ -23,37 +23,40 @@ public:
     virtual void moveCamera(int action, float deltaTime) override;
     virtual void handleNewObject() override;
     virtual void handleNewTexture(unsigned char *data, int width, int height, int nrChannels) override;
+    virtual void newShader() override;
 
 private:
 
-    GLuint program;
+    #define SHADERS 3
+    GLuint program[SHADERS];
 
     // OpenGL buffers
     #define OBJECTS 1
     GLuint vao[OBJECTS];
     GLuint vBuffer[OBJECTS];
     GLuint iBuffer[OBJECTS];
-    GLuint locModel;
-    GLuint locView;
-    GLuint locProjection;
-
+    
     // OpenGL attribute locations
-    GLuint locVertices;
-    GLuint locNormals;
-    GLuint locTexturePos;
+    GLuint locVertices[SHADERS];// = {0, 0, 0}; // Both shaders use location 0 for vPosition
+    GLuint locNormals[SHADERS];// = {1, 1, 1};   // Both shaders use location 1 for vNormal
+    GLuint locTexturePos[SHADERS] ;//= {2, 2, 2}; // Both shaders use location 2 for vTexture
+    
+    GLuint locModel[SHADERS];
+    GLuint locView[SHADERS];
+    GLuint locProjection[SHADERS];
 
-    GLuint locCameraPos;
+    GLuint locCameraPos[SHADERS];
 
-    GLuint locLightPos;
-    GLuint locLightColor;
-    GLuint locAmbientColor;
+    GLuint locLightPos[SHADERS];
+    GLuint locLightColor[SHADERS];
+    GLuint locAmbientColor[SHADERS];
 
-    GLuint locMaterialAmbient;
-    GLuint locMaterialDiffuse;
-    GLuint locMaterialSpecular;
-    GLuint locMaterialShininess;
+    GLuint locMaterialAmbient[SHADERS];
+    GLuint locMaterialDiffuse[SHADERS];
+    GLuint locMaterialSpecular[SHADERS];
+    GLuint locMaterialShininess[SHADERS];
 
-    GLuint locUseTexture;
+    GLuint locUseTexture[SHADERS];
 
     // Geometry data
     std::vector<Vector3> vertexList;

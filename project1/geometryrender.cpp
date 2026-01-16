@@ -20,9 +20,11 @@ void GeometryRender::initialize()
     glEnable(GL_DEPTH_TEST);
 
     // Create and initialize a program object with shaders
-    program = initProgram("shader/vshader.glsl", "shader/fshader.glsl");
+    program[0] = initProgram("shader/vshader.glsl", "shader/fshader.glsl");
+    program[1] = initProgram("shader/vshaderGouraud.glsl", "shader/fshaderGouraud.glsl");
+    program[2] = initProgram("shader/vshaderWireframe.glsl", "shader/fshaderWireframe.glsl");
     // Installs the program object as part of current rendering state
-    glUseProgram(program);
+    glUseProgram(program[0]);
 
     // Creat a vertex array object
     glGenVertexArrays(OBJECTS, vao);
@@ -39,26 +41,59 @@ void GeometryRender::initialize()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iBuffer[0]);
 
     // Get locations of the attributes in the shader
-    locVertices = glGetAttribLocation( program, "vPosition");
-    locNormals = glGetAttribLocation(program, "vNormal");
-    locTexturePos = glGetAttribLocation(program, "vTexture");
+    locVertices[0] = glGetAttribLocation( program[0], "vPosition");
+    locNormals[0] = glGetAttribLocation(program[0], "vNormal");
+    locTexturePos[0] = glGetAttribLocation(program[0], "vTexture");
     
-    locModel = glGetUniformLocation(program,"M");
-    locView = glGetUniformLocation(program,"V");
-    locProjection = glGetUniformLocation(program,"P");
+    locModel[0] = glGetUniformLocation(program[0],"M");
+    locView[0] = glGetUniformLocation(program[0],"V");
+    locProjection[0] = glGetUniformLocation(program[0],"P");
 
-    locCameraPos = glGetUniformLocation(program,"camPos");
+    locCameraPos[0] = glGetUniformLocation(program[0],"camPos");
 
-    locLightPos = glGetUniformLocation(program,"lightPos");
-    locLightColor = glGetUniformLocation(program,"lightColor");
-    locAmbientColor = glGetUniformLocation(program,"ambientColor");
+    locLightPos[0] = glGetUniformLocation(program[0],"lightPos");
+    locAmbientColor[0] = glGetUniformLocation(program[0],"ambientColor");
+    locLightColor[0] = glGetUniformLocation(program[0],"lightColor");
 
-    locMaterialAmbient = glGetUniformLocation(program,"materialAmbient");
-    locMaterialDiffuse = glGetUniformLocation(program,"materialDiffuse");
-    locMaterialSpecular = glGetUniformLocation(program,"materialSpecular");
-    locMaterialShininess = glGetUniformLocation(program,"materialShininess");
+    locMaterialAmbient[0] = glGetUniformLocation(program[0],"materialAmbient");
+    locMaterialDiffuse[0] = glGetUniformLocation(program[0],"materialDiffuse");
+    locMaterialSpecular[0] = glGetUniformLocation(program[0],"materialSpecular");
+    locMaterialShininess[0] = glGetUniformLocation(program[0],"materialShininess");
 
-    locUseTexture = glGetUniformLocation(program, "useTexture");
+    locUseTexture[0] = glGetUniformLocation(program[0], "useTexture");
+
+    glUseProgram(program[1]);
+
+    locVertices[1] = glGetAttribLocation( program[1], "vPosition");
+    locNormals[1] = glGetAttribLocation(program[1], "vNormal");
+    locTexturePos[1] = glGetAttribLocation(program[1], "vTexture");
+    
+    locModel[1] = glGetUniformLocation(program[1],"M");
+    locView[1] = glGetUniformLocation(program[1],"V");
+    locProjection[1] = glGetUniformLocation(program[1],"P");
+
+    locCameraPos[1] = glGetUniformLocation(program[1],"camPos");
+
+    locLightPos[1] = glGetUniformLocation(program[1],"lightPos");
+    locAmbientColor[1] = glGetUniformLocation(program[1],"ambientColor");
+    locLightColor[1] = glGetUniformLocation(program[1],"lightColor");
+
+    locMaterialAmbient[1] = glGetUniformLocation(program[1],"materialAmbient");
+    locMaterialDiffuse[1] = glGetUniformLocation(program[1],"materialDiffuse");
+    locMaterialSpecular[1] = glGetUniformLocation(program[1],"materialSpecular");
+    locMaterialShininess[1] = glGetUniformLocation(program[1],"materialShininess");
+
+    locUseTexture[1] = glGetUniformLocation(program[1], "useTexture");
+
+    glUseProgram(program[2]);
+
+    locVertices[2] = glGetAttribLocation( program[2], "vPosition");
+    locNormals[2] = glGetAttribLocation(program[2], "vNormal"); // Not used but needed in loadGeometry
+    locTexturePos[2] = glGetAttribLocation(program[2], "vTexture"); // Not used but needed in loadGeometry
+
+    locModel[2] = glGetUniformLocation(program[2],"M");
+    locView[2] = glGetUniformLocation(program[2],"V");
+    locProjection[2] = glGetUniformLocation(program[2],"P");
 
     glBindVertexArray(0);
     glUseProgram(0);
@@ -78,23 +113,23 @@ void GeometryRender::loadGeometry()
     size_t iSize = indexList.size()*sizeof(unsigned int);
     
 
-    glUseProgram(program);
+    glUseProgram(program[shading_current_idx]);
     glBindVertexArray(vao[0]);
 
     // Set the pointers of locVertices to the right places
-    glVertexAttribPointer(locVertices, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
-    glEnableVertexAttribArray(locVertices);
+    glVertexAttribPointer(locVertices[shading_current_idx], 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(0));
+    glEnableVertexAttribArray(locVertices[shading_current_idx]);
 
-    glVertexAttribPointer(locNormals, 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(vSize));
-    glEnableVertexAttribArray(locNormals);
+    glVertexAttribPointer(locNormals[shading_current_idx], 3, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(vSize));
+    glEnableVertexAttribArray(locNormals[shading_current_idx]);
 
-    glVertexAttribPointer(locTexturePos, 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(vSize + nSize));
-    glEnableVertexAttribArray(locTexturePos);
+    glVertexAttribPointer(locTexturePos[shading_current_idx], 2, GL_FLOAT, GL_FALSE, 0, BUFFER_OFFSET(vSize + nSize));
+    glEnableVertexAttribArray(locTexturePos[shading_current_idx]);
     
     // Send the matrix uniforms
-    glUniformMatrix4fv(locModel, 1, GL_TRUE, matModel.mat);
-    glUniformMatrix4fv(locView, 1, GL_TRUE, cam.getViewMatrix().mat);
-    glUniformMatrix4fv(locProjection, 1, GL_TRUE, cam.getProjectionMatrix().mat);
+    glUniformMatrix4fv(locModel[shading_current_idx], 1, GL_TRUE, matModel.mat);
+    glUniformMatrix4fv(locView[shading_current_idx], 1, GL_TRUE, cam.getViewMatrix().mat);
+    glUniformMatrix4fv(locProjection[shading_current_idx], 1, GL_TRUE, cam.getProjectionMatrix().mat);
 
     // Load object data to the array buffer and index array
     glBufferData(GL_ARRAY_BUFFER, vSize + nSize + tSize, NULL, GL_STATIC_DRAW);
@@ -173,11 +208,11 @@ void GeometryRender::centerAndScaleObject() {
 void GeometryRender::debugShader(void) const
 {
     GLint  logSize;
-    glGetProgramiv( program, GL_INFO_LOG_LENGTH, &logSize );
+    glGetProgramiv( program[0], GL_INFO_LOG_LENGTH, &logSize );
     if (logSize > 0) {
         std::cerr << "Failure in shader "  << std::endl;
         char logMsg[logSize+1];
-        glGetProgramInfoLog( program, logSize, nullptr, &(logMsg[0]) );
+        glGetProgramInfoLog( program[0], logSize, nullptr, &(logMsg[0]) );
         std::cerr << "Shader info log: " << logMsg << std::endl;
     }
 
@@ -187,18 +222,23 @@ void GeometryRender::debugShader(void) const
 void GeometryRender::display()
 {
     
-    glUseProgram(program);
+    glUseProgram(program[shading_current_idx]);
     glBindVertexArray(vao[0]);
     
-    updateView();
-
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // Call OpenGL to draw the triangle
-    glDrawElements(GL_TRIANGLES, static_cast<int>(indexList.size()), GL_UNSIGNED_INT, BUFFER_OFFSET(0));
-
-    // Not to be called in release...
-    debugShader();
+    if (shading_current_idx == 2) {
+        // Wireframe shader
+        glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+        glDrawElements(GL_TRIANGLES, static_cast<int>(indexList.size()), GL_UNSIGNED_INT, BUFFER_OFFSET(0));
+        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+    } else {
+           
+        updateView();
+        
+        // Call OpenGL to draw the triangle
+        glDrawElements(GL_TRIANGLES, static_cast<int>(indexList.size()), GL_UNSIGNED_INT, BUFFER_OFFSET(0));
+    }
 
     glBindVertexArray(0);
     glUseProgram(0);
@@ -213,27 +253,27 @@ void GeometryRender::updateView() {
     float aspectRatio = ((float) width()) / ((float) height());
 
     cam.updateView(fov, farplane, top, obliqueScale, obliqueAngleRad, proj_current_idx, aspectRatio);
-    glUniformMatrix4fv(locProjection, 1, GL_TRUE, cam.getProjectionMatrix().mat);
+    glUniformMatrix4fv(locProjection[shading_current_idx], 1, GL_TRUE, cam.getProjectionMatrix().mat);
 
-    glUniform3f(locCameraPos, cam.getPosition().vec[0], cam.getPosition().vec[1], cam.getPosition().vec[2]);
+    glUniform3f(locCameraPos[shading_current_idx], cam.getPosition().vec[0], cam.getPosition().vec[1], cam.getPosition().vec[2]);
 
-    glUniform3f(locLightPos, lightPos[0], lightPos[1], lightPos[2]);
-    glUniform3f(locLightColor, lightColor[0], lightColor[1], lightColor[2]);
-    glUniform3f(locAmbientColor, ambientColor[0], ambientColor[1], ambientColor[2]);
+    glUniform3f(locLightPos[shading_current_idx], lightPos[0], lightPos[1], lightPos[2]);
+    glUniform3f(locLightColor[shading_current_idx], lightColor[0], lightColor[1], lightColor[2]);
+    glUniform3f(locAmbientColor[shading_current_idx], ambientColor[0], ambientColor[1], ambientColor[2]);
 
-    glUniform3f(locMaterialAmbient, materialAmbient[0], materialAmbient[1], materialAmbient[2]);
-    glUniform3f(locMaterialDiffuse, materialDiffuse[0], materialDiffuse[1], materialDiffuse[2]);
-    glUniform3f(locMaterialSpecular, materialSpecular[0], materialSpecular[1], materialSpecular[2]);
-    glUniform1f(locMaterialShininess, materialShininess);
+    glUniform3f(locMaterialAmbient[shading_current_idx], materialAmbient[0], materialAmbient[1], materialAmbient[2]);
+    glUniform3f(locMaterialDiffuse[shading_current_idx], materialDiffuse[0], materialDiffuse[1], materialDiffuse[2]);
+    glUniform3f(locMaterialSpecular[shading_current_idx], materialSpecular[0], materialSpecular[1], materialSpecular[2]);
+    glUniform1f(locMaterialShininess[shading_current_idx], materialShininess);
 
-    glUniform1i(locUseTexture, textureShow);
+    glUniform1i(locUseTexture[shading_current_idx], textureShow);
 }
 
 /**
  * Take an input and transform the object accordingly
  */
 void GeometryRender::controlls(int action) {
-    glUseProgram(program);
+    glUseProgram(program[shading_current_idx]);
     switch (action)
     {
     // Rotating the object
@@ -271,16 +311,16 @@ void GeometryRender::controlls(int action) {
     default:
         break;
     }
-    glUniformMatrix4fv(locModel, 1, GL_TRUE, matModel.mat);
+    glUniformMatrix4fv(locModel[shading_current_idx], 1, GL_TRUE, matModel.mat);
 }
 
 /**
  * Rotate the camera and update the shader parameter
  */
 void GeometryRender::rotateCamera(float deltaX, float deltaY) {
-    glUseProgram(program);
+    glUseProgram(program[shading_current_idx]);
     cam.rotate(deltaX/180, deltaY/180);
-    glUniformMatrix4fv(locView, 1, GL_TRUE, cam.getViewMatrix().mat);
+    glUniformMatrix4fv(locView[shading_current_idx], 1, GL_TRUE, cam.getViewMatrix().mat);
     glUseProgram(0);
 }
 
@@ -288,7 +328,7 @@ void GeometryRender::rotateCamera(float deltaX, float deltaY) {
  * Move the camera and update the shader parameter
  */
 void GeometryRender::moveCamera(int action, float deltaTIme) {
-    glUseProgram(program);
+    glUseProgram(program[shading_current_idx]);
     switch (action)
     {
     // Moving the camera in 3d
@@ -311,7 +351,7 @@ void GeometryRender::moveCamera(int action, float deltaTIme) {
         cam.move(0,CAMERA_MOVE_SPEED*deltaTIme,0);
         break;
     }
-    glUniformMatrix4fv(locView, 1, GL_TRUE, cam.getViewMatrix().mat);
+    glUniformMatrix4fv(locView[shading_current_idx], 1, GL_TRUE, cam.getViewMatrix().mat);
     glUseProgram(0);
 }
 
@@ -419,4 +459,8 @@ void GeometryRender::handleNewTexture(unsigned char *data, int width, int height
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
     }
+}
+
+void GeometryRender::newShader() {
+    loadGeometry();
 }

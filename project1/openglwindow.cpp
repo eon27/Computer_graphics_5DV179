@@ -368,6 +368,15 @@ OpenGLWindow::DrawGui()
         }
     }
 
+    if (ImGui::CollapsingHeader("Shading")) {
+        const char* items[] = {"Phong", "Gouraud", "Wireframe"};
+        int shading_previous_idx = shading_current_idx;
+        ImGui::Combo("shading", &shading_current_idx, items, IM_ARRAYSIZE(items), IM_ARRAYSIZE(items));
+        if (shading_previous_idx != shading_current_idx) {
+            newShader();
+        }
+    }
+
     ImGui::End();
 }
 

@@ -43,6 +43,7 @@ public:
     virtual void handleNewObject() = 0;
     void openNewTexture(std::string filename);
     virtual void handleNewTexture(unsigned char *data, int width, int height, int nrChannels) = 0;
+    virtual void newShader() = 0;
 
     objLoader objData;
 
@@ -62,6 +63,8 @@ protected:
     float obliqueScale = 0.0f;
     float obliqueAngleRad = M_PI/4.0f;
     int proj_current_idx = 0;
+
+    int shading_current_idx = 0;
 
     float lightPos[3] = {0.0f, 0.0f, 0.0f};
     float lightColor[3] = {1.0f, 1.0f, 1.0f};
