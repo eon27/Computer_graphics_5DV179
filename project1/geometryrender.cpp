@@ -422,6 +422,23 @@ void GeometryRender::handleNewObject() {
     
     // Calculate texture coordinates for vertices, by using two part mapping with sphere
     for (size_t i = 0; i < vertexList.size(); i++) {
+        // float b = 2 * (vertexList[i] * normalList[i]);
+        // float c = (vertexList[i] * vertexList[i]) - pointMaxDistance * pointMaxDistance; // pointMaxDistance = maximum possible distance from vertex to origin 
+        // float q = -0.5 * (b + (signbit(b) * 2 - 1) * sqrt(b*b - 4*c)); // Signbit = true/false (1/0), 1 * 2 - 1 = 1, 0 * 2 - 1 = -1
+
+        // float d1 = q;
+        // float d2 = c/q;
+
+        // float dPlus = d1;
+        // if (d2 > d1) dPlus = d2;
+
+        // Vector3 intersect = vertexList[i] + normalList[i] * dPlus;
+        // intersect = intersect.normalize();
+
+        // float s = 0.5 - asin(intersect.vec[1] / pointMaxDistance) / (M_PI);
+        // float t = atan2(intersect.vec[2] / pointMaxDistance, intersect.vec[0] / pointMaxDistance) / (2 * M_PI) + 0.5;
+        // texCoords.push_back(Vector2(t, s));
+
         float b = 2 * (vertexList[i] * normalList[i]);
         float c = (vertexList[i] * vertexList[i]) - pointMaxDistance * pointMaxDistance; // pointMaxDistance = maximum possible distance from vertex to origin 
         float q = -0.5 * (b + (signbit(b) * 2 - 1) * sqrt(b*b - 4*c)); // Signbit = true/false (1/0), 1 * 2 - 1 = 1, 0 * 2 - 1 = -1
@@ -432,14 +449,13 @@ void GeometryRender::handleNewObject() {
         float dPlus = d1;
         if (d2 > d1) dPlus = d2;
 
-        Vector3 intersect = vertexList[i] + vertexList[i].normalize() * dPlus;
+        Vector3 intersect = vertexList[i] + normalList[i] * dPlus;
         intersect = intersect.normalize();
 
-        float s = acos(intersect.vec[0]/pointMaxDistance) / M_1_PI;
-        float t = atan(intersect.vec[2]/intersect.vec[1]) / M_1_PI + 0.5;
-        texCoords.push_back(Vector2(s, t));
+        float s = acos(intersect.vec[1] / pointMaxDistance) / M_PI;
+        float t = atan2(intersect.vec[2] / pointMaxDistance, intersect.vec[0] / pointMaxDistance) / (2 * M_PI) + 0.5;
+        texCoords.push_back(Vector2(t, s));
     }
-
     
     // Send data to buffers
     loadGeometry();
