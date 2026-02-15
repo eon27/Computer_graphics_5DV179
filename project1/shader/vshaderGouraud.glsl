@@ -50,8 +50,8 @@ main()
     if (length(diffuse) > 0) {
         // Specular light calculation
         vec3 camDir = normalize(camPos - vertexPos);
-        vec3 reflect = normalize(lightDir + camDir);
-        float reflection = max(dot(norm, reflect), 0.0);
+        vec3 reflectionDir = reflect(-lightDir, norm);
+        float reflection = max(dot(camDir, reflectionDir), 0.0);
         specular = pow(reflection, materialShininess) * materialSpecular * lightColor / lightDist;
     } else {
         specular = vec3(0,0,0);
